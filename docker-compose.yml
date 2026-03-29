@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: unisync_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: unisync_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb://root:password@mongodb:27017/unisync?authSource=admin
+      - NODE_ENV=development
+      - JWT_SECRET=your_jwt_secret_key_here
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: unisync_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_BASE_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

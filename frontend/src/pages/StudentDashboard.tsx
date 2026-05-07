@@ -172,3 +172,27 @@ export default function StudentDashboard({ user }: { user: User }) {
       console.error('Cancel error:', err);
     }
   };
+
+  return (
+    <div className="space-y-8">
+      {/* Search & Lecturer Select */}
+      <section className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-end">
+        <div className="flex-1 space-y-2">
+          <label className="text-sm font-bold text-gray-700 ml-1">Find a Lecturer</label>
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <select 
+              className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+              onChange={(e) => {
+                const lecturer = lecturers.find(l => l._id === e.target.value);
+                setSelectedLecturer(lecturer || null);
+              }}
+              value={selectedLecturer?._id || ''}
+            >
+              <option value="" disabled>Select a lecturer...</option>
+              {lecturers.map(l => (
+                <option key={l._id} value={l._id}>{l.name} ({l.department})</option>
+              ))}
+            </select>
+          </div>
+        </div>

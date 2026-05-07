@@ -46,3 +46,7 @@ export default function StudentDashboard({ user }: { user: User }) {
       }
       fetchMyAppointments();
     };
+
+     socket.on('slot:updated', handleUpdate);
+    return () => { socket.off('slot:updated', handleUpdate); };
+  }, [selectedLecturer, selectedDate]);

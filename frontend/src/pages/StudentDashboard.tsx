@@ -92,3 +92,19 @@ export default function StudentDashboard({ user }: { user: User }) {
       return;
     }
     setBookingInProgress(true); 
+ try {
+      let uploadedDoc = null;
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        });
+        if (uploadRes.ok) {
+          uploadedDoc = await uploadRes.json();
+        }
+      }

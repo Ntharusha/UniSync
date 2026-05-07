@@ -35,3 +35,14 @@ export default function StudentDashboard({ user }: { user: User }) {
     fetchMyAppointments();
   }, []);
  
+   useEffect(() => {
+    if (selectedLecturer) {
+      fetchSlots();
+    }
+    
+    const handleUpdate = (data: any) => {
+      if (selectedLecturer?._id === data.lecturerId && selectedDate === data.date) {
+        fetchSlots();
+      }
+      fetchMyAppointments();
+    };

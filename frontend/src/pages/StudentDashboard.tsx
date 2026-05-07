@@ -196,3 +196,14 @@ export default function StudentDashboard({ user }: { user: User }) {
             </select>
           </div>
         </div>
+
+        <div className="w-full md:w-64 space-y-2">
+          <label className="text-sm font-bold text-gray-700 ml-1">Select Date</label>
+          <input 
+            type="date" 
+            className="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
+      </section>

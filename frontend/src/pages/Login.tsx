@@ -123,5 +123,39 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
               </div>
             </div>
 
-            
+                  <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center p-5 bg-vau-maroon text-white rounded-2xl hover:bg-vau-maroon/90 hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:scale-100"
+            >
+              <span className="text-lg font-black mr-2">
+                {loading ? 'Authenticating...' : 'Sign In'}
+              </span>
+              {!loading && <ArrowRight size={20} />}
+            </button>
+          </form>
+
+          <div className="mt-8 p-6 bg-vau-gold/10 rounded-2xl">
+            <p className="text-xs font-bold text-vau-maroon/80 text-center leading-relaxed">
+              Use your Faculty credentials to access UniSync. 
+              Contact the IT Service Desk for account reset.
+            </p>
+          </div>
+
+
+          <div className="mt-10 pt-8 border-t border-gray-100 flex justify-center gap-6">
+             <div className="flex flex-col items-center">
+                <div className="text-[10px] text-gray-400 font-black uppercase mb-1">Students</div>
+                <code className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-600">saman@vau.ac.lk / admin123</code>
+             </div>
+             <div className="flex flex-col items-center">
+                <div className="text-[10px] text-gray-400 font-black uppercase mb-1">Staff</div>
+                <code className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-600">priya@vau.ac.lk / admin123</code>
+             </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 

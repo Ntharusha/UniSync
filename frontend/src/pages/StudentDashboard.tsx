@@ -227,3 +227,14 @@ export default function StudentDashboard({ user }: { user: User }) {
               </span>
             </div>
           </div>
+
+           {!selectedLecturer ? (
+            <div className="aspect-video bg-white rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 p-8 text-center">
+              <Layers size={48} className="mb-4 opacity-20" />
+              <p className="text-xl font-medium text-gray-500">Select a lecturer to see available time slots</p>
+            </div>
+          ) : loadingSlots ? (
+            <div className="aspect-video bg-white rounded-3xl flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-vau-maroon border-t-transparent"></div>
+            </div>
+          ) :

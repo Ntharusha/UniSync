@@ -50,3 +50,20 @@ export default function StudentDashboard({ user }: { user: User }) {
      socket.on('slot:updated', handleUpdate);
     return () => { socket.off('slot:updated', handleUpdate); };
   }, [selectedLecturer, selectedDate]);
+
+  const fetchSlots = async () => {
+    if (!selectedLecturer) return;
+    setLoadingSlots(true);
+    setSelectedSlot(null);
+    try {
+      const res = await fetch(`/api/availability/${selectedLecturer._id}?date=${selectedDate}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setSlots(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };

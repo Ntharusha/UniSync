@@ -411,3 +411,19 @@ export default function StudentDashboard({ user }: { user: User }) {
                 </motion.div>
               ))
             )}         
+            </AnimatePresence>
+        </div>
+      </section>
+
+      <AnimatePresence>
+        {activeChat && (
+          <Chat 
+            appointmentId={activeChat} 
+            currentUser={user} 
+            onClose={() => setActiveChat(null)} 
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

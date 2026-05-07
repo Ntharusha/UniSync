@@ -341,3 +341,41 @@ export default function StudentDashboard({ user }: { user: User }) {
           </div>
         </div>
       </div>              
+
+ {/* My Appointments Section */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-black text-gray-900">My Appointments</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence>
+            {myAppointments.length === 0 ? (
+              <div key="empty" className="col-span-full py-12 bg-white rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-gray-400">
+                <CalIcon size={40} className="mb-2 opacity-20" />
+                <p className="font-medium italic">You haven't made any appointment requests yet.</p>
+              </div>
+            ) : (
+              myAppointments.map((appt) => (
+                <motion.div 
+                  key={appt._id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col gap-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 bg-vau-gold/20 text-vau-maroon rounded-full flex items-center justify-center font-bold">
+                        {(appt.lecturerId as User)?.name?.[0]}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900">{(appt.lecturerId as User)?.name}</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase">Lecturer</p>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${
+                      appt.status === 'approved' ? 'bg-green-100 text-green-600' :
+                      appt.status === 'pending' ? 'bg-amber-100 text-amber-600' :
+                      'bg-red-100 text-red-600'
+                    }`}>
+                      {appt.status}
+                    </span>
+                  </div>

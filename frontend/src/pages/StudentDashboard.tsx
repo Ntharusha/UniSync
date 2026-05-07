@@ -108,3 +108,9 @@ export default function StudentDashboard({ user }: { user: User }) {
           uploadedDoc = await uploadRes.json();
         }
       }
+
+      if (priority === 'emergency' && !uploadedDoc) {
+        alert('Emergency requests require a supporting document (medical certificate or proof).');
+        setBookingInProgress(false);
+        return;
+      }

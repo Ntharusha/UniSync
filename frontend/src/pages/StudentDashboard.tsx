@@ -379,3 +379,35 @@ export default function StudentDashboard({ user }: { user: User }) {
                       {appt.status}
                     </span>
                   </div>
+
+         <div className="grid grid-cols-2 gap-2">
+                    <div className="p-3 bg-gray-50 rounded-2xl flex flex-col items-center justify-center">
+                       <CalIcon size={14} className="text-gray-400 mb-1" />
+                       <span className="text-xs font-black text-gray-900">{format(new Date(appt.requestedStart), 'MMM d')}</span>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-2xl flex flex-col items-center justify-center">
+                       <Clock size={14} className="text-gray-400 mb-1" />
+                       <span className="text-xs font-black text-gray-900">{format(new Date(appt.requestedStart), 'HH:mm')}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setActiveChat(appt._id)}
+                      className={`flex-1 h-10 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                        activeChat === appt._id ? 'bg-vau-maroon text-vau-gold' : 'bg-gray-100 text-gray-600 hover:bg-vau-maroon hover:text-white'
+                      }`}
+                    >
+                      <MessageSquare size={16} /> Chat
+                    </button>
+                    {appt.status === 'pending' && (
+                      <button
+                        onClick={() => handleCancel(appt._id)}
+                        className="h-10 px-4 rounded-xl font-bold text-xs text-red-500 bg-red-50 hover:bg-red-100 transition-all">
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              ))
+            )}         

@@ -148,3 +148,10 @@ export default function StudentDashboard({ user }: { user: User }) {
         const err = await res.json().catch(() => ({ error: `Server error (${res.status})` }));
         alert(err.error || 'Booking failed');
       }
+      } catch (err: any) {
+      console.error('Booking Error:', err);
+      alert('Failed to connect to the server! Your backend API might be offline or restarting. (Network Error)');
+    } finally {
+      setBookingInProgress(false);
+    }
+  };

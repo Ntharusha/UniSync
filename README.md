@@ -1,13 +1,5 @@
 # 🚀 UniSync – Student–Lecturer Appointment Permission System
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-2020/ASP/97 Buddini
-2021/Asp/54 Sachini
-=======
-2020/ASP/97 Buddhini
->>>>>>> Stashed changes
-=======
 UniSync is a cross-platform (Web + Mobile) intelligent appointment management system designed to streamline student–lecturer communication in universities. It replaces inefficient email-based scheduling with a structured, permission-based workflow powered by real-time systems and timetable intelligence.
 
 ---

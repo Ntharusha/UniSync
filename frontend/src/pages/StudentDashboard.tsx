@@ -293,3 +293,30 @@ export default function StudentDashboard({ user }: { user: User }) {
                 <PriorityBtn active={priority === 'emergency'} color="red" label="Emergency" sub="Requires immediate action" onClick={() => setPriority('emergency')} />
               </div>
             </div>
+
+      {priority === 'emergency' && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-2 pt-2"
+              >
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                  Supporting Document <span className="text-red-500">*</span>
+                </label>
+                <div className="relative group">
+                  <input 
+                    type="file" 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  />
+                  <div className={`p-4 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-all ${
+                    selectedFile ? 'border-green-400 bg-green-50' : 'border-gray-200 group-hover:border-vau-maroon'
+                  }`}>
+                    <Paperclip className={selectedFile ? 'text-green-500' : 'text-gray-400'} size={24} />
+                    <span className="text-xs font-bold text-gray-500">
+                      {selectedFile ? selectedFile.name : 'Click to upload proof (.pdf, .jpg)'}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}      

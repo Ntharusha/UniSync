@@ -67,3 +67,17 @@ export default function StudentDashboard({ user }: { user: User }) {
       setLoadingSlots(false);
     }
   };
+
+  const fetchMyAppointments = async () => {
+    try {
+      const res = await fetch(`/api/appointments?studentId=${user._id}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setMyAppointments(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };

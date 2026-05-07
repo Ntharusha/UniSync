@@ -81,3 +81,14 @@ export default function StudentDashboard({ user }: { user: User }) {
       console.error(err);
     }
   };
+
+  const handleBook = async () => {
+    if (!selectedSlot) {
+      alert('Please select a time slot first');
+      return;
+    }
+    if (!reason) {
+      alert('Please provide a reason for the appointment');
+      return;
+    }
+    setBookingInProgress(true); 

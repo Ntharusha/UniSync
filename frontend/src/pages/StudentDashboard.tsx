@@ -131,3 +131,20 @@ export default function StudentDashboard({ user }: { user: User }) {
           documents: uploadedDoc ? [uploadedDoc] : []
         })
       });
+
+      if (res.ok) {
+        alert('Appointment request submitted!');
+        fetchSlots();
+      } else if (res.status === 409) {
+        const err = await res.json().catch(() => ({ error: 'Conflict' }));
+        let msg = err.error || 'Conflict';
+        if (err.alternatives && err.alternatives.length > 0) {
+          msg += '\n\nSuggested alternatives:\n' + err.alternatives.map((a: any) => 
+            `- ${format(new Date(a.start), 'HH:mm')} to ${format(new Date(a.end), 'HH:mm')}`
+          ).join('\n');
+        }
+        alert(msg);
+      } else {
+        const err = await res.json().catch(() => ({ error: `Server error (${res.status})` }));
+        alert(err.error || 'Booking failed');
+      }

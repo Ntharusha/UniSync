@@ -63,3 +63,28 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
           University of Vavuniya Appointment System
         </p>
       </motion.div>
+
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-10 sm:mx-auto sm:w-full sm:max-w-md z-10"
+      >
+        <div className="bg-white/80 backdrop-blur-xl py-10 px-4 shadow-2xl sm:rounded-3xl sm:px-10 border border-white/20">
+          <p className="text-xl font-bold text-gray-800 mb-8 text-center">
+            Sign in to your account
+          </p>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 text-red-600"
+              >
+                <AlertCircle size={20} className="shrink-0 mt-0.5" />
+                <p className="text-sm font-bold">{error}</p>
+              </motion.div>
+            )}
+

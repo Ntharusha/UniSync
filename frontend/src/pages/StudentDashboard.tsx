@@ -270,3 +270,26 @@ export default function StudentDashboard({ user }: { user: User }) {
             </div>
           )}
         </div>
+
+         {/* Booking Sidebar */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-black text-gray-900">Request Details</h2>
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Reason for Meeting</label>
+              <textarea 
+                className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 min-h-[120px] font-medium"
+                placeholder="Briefly describe what you'd like to discuss..."
+                value={reason}
+                onChange={e => setReason(e.target.value)}
+              ></textarea>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Priority Level</label>
+              <div className="grid grid-cols-1 gap-2">
+                <PriorityBtn active={priority === 'normal'} color="green" label="Normal" sub="Routine inquiry" onClick={() => setPriority('normal')} />
+                <PriorityBtn active={priority === 'academic_urgent'} color="amber" label="Urgent" sub="Thesis/Exam matter" onClick={() => setPriority('academic_urgent')} />
+                <PriorityBtn active={priority === 'emergency'} color="red" label="Emergency" sub="Requires immediate action" onClick={() => setPriority('emergency')} />
+              </div>
+            </div>

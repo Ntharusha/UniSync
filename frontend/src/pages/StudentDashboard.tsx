@@ -210,3 +210,20 @@ export default function StudentDashboard({ user }: { user: User }) {
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"></div>
+
+      {/* Slot Picker */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-gray-900">Available Slots</h2>
+            <div className="flex gap-2">
+              <span className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-white border border-gray-300 rounded-full"></div> Free
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div> Teaching
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1.5 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div> Booked
+              </span>
+            </div>
+          </div>

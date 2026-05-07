@@ -319,4 +319,25 @@ export default function StudentDashboard({ user }: { user: User }) {
                   </div>
                 </div>
               </motion.div>
-            )}      
+            )} 
+
+   <div className="pt-4 border-t border-gray-100 space-y-4">
+               <div className="flex items-center gap-3 p-4 bg-vau-gold/10 rounded-2xl">
+                 <Filter className="text-vau-maroon" size={20} />
+                 <p className="text-[10px] font-bold text-vau-maroon leading-tight">Emergency requests can override normal bookings if confirmed by the system.</p>
+               </div>
+               
+               <button 
+                 onClick={handleBook}
+                 disabled={!selectedSlot || bookingInProgress}
+                 className="w-full flex items-center justify-center p-5 bg-vau-maroon text-white rounded-2xl hover:bg-vau-maroon/90 hover:shadow-xl hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:cursor-not-allowed shadow-lg shadow-vau-maroon/20"
+               >
+                 <span className="text-lg font-black mr-2">
+                   {bookingInProgress ? 'Submitting...' : 'Submit Request'}
+                 </span>
+                 {!bookingInProgress && <Check size={20} />}
+               </button>
+            </div>
+          </div>
+        </div>
+      </div>              

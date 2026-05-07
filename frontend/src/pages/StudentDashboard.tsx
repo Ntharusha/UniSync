@@ -19,3 +19,19 @@ export default function StudentDashboard({ user }: { user: User }) {
   const [myAppointments, setMyAppointments] = useState<Appointment[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
+
+ useEffect(() => {
+    fetch('/api/users', {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setLecturers(data.filter((u: any) => u.role === 'lecturer'));
+        }
+      })
+      .catch(console.error);
+    
+    fetchMyAppointments();
+  }, []);
+ 

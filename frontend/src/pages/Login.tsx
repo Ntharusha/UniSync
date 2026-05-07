@@ -39,3 +39,27 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
       setLoading(false);
     }
   };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-vau-maroon/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-vau-gold/10 rounded-full blur-3xl"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="sm:mx-auto sm:w-full sm:max-w-md z-10"
+      >
+        <div className="flex justify-center">
+          <div className="h-20 w-20 bg-vau-maroon rounded-2xl flex items-center justify-center shadow-xl rotate-3">
+            <Calendar className="h-12 w-12 text-vau-gold" />
+          </div>
+        </div>
+        <h2 className="mt-8 text-center text-4xl font-black text-gray-900 tracking-tight">
+          UniSync
+        </h2>
+        <p className="mt-2 text-center text-gray-600 font-medium">
+          University of Vavuniya Appointment System
+        </p>
+      </motion.div>

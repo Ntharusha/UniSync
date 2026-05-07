@@ -121,3 +121,13 @@ export default function StudentDashboard({ user }: { user: User }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
+         body: JSON.stringify({
+          studentId: user._id,
+          lecturerId: (selectedLecturer as any)._id,
+          requestedStart: selectedSlot!.start,
+          requestedEnd: selectedSlot!.end,
+          priority,
+          reason,
+          documents: uploadedDoc ? [uploadedDoc] : []
+        })
+      });

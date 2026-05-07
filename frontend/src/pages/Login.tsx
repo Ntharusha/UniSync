@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-=======
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Calendar, User, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { User as UserType } from '../types';
->>>>>>> origin/main
 
 export default function Login({ onLogin }: { onLogin: (user: UserType) => void }) {
   const [email, setEmail] = useState('');
@@ -13,7 +10,7 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-<<<<<<< HEAD
+
 
    const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

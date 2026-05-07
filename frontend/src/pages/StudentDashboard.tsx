@@ -155,3 +155,20 @@ export default function StudentDashboard({ user }: { user: User }) {
       setBookingInProgress(false);
     }
   };
+
+  const handleCancel = async (appointmentId: string) => {
+    if (!confirm('Are you sure you want to cancel this appointment request?')) return;
+    try {
+      const res = await fetch(`/api/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status: 'cancelled', reason: 'Cancelled by student' })
+      });
+      if (res.ok) fetchMyAppointments();
+    } catch (err) {
+      console.error('Cancel error:', err);
+    }
+  };

@@ -114,3 +114,10 @@ export default function StudentDashboard({ user }: { user: User }) {
         setBookingInProgress(false);
         return;
       }
+
+      const res = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },

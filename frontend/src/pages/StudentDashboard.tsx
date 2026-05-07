@@ -427,3 +427,22 @@ export default function StudentDashboard({ user }: { user: User }) {
     </div>
   );
 }
+
+function PriorityBtn({ active, color, label, sub, onClick }: { active: boolean, color: string, label: string, sub: string, onClick: () => void }) {
+  const colorMap: any = {
+    green: active ? 'bg-green-500 text-white' : 'bg-green-100 text-green-700',
+    amber: active ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700',
+    red: active ? 'bg-red-500 text-white' : 'bg-red-100 text-red-700',
+  };
+  return (
+    <button 
+      onClick={onClick}
+      className={`p-4 rounded-2xl text-left border-2 transition-all ${
+        active ? 'border-transparent shadow-lg scale-[1.02]' : 'border-gray-50 hover:border-gray-200'
+      } ${colorMap[color] || 'bg-gray-100 text-gray-700'}`}
+    >
+      <div className="font-black text-lg">{label}</div>
+      <div className={`text-xs opacity-80 ${active ? 'text-white' : 'text-gray-500'}`}>{sub}</div>
+    </button>
+  );
+}

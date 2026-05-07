@@ -237,4 +237,36 @@ export default function StudentDashboard({ user }: { user: User }) {
             <div className="aspect-video bg-white rounded-3xl flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-vau-maroon border-t-transparent"></div>
             </div>
-          ) :
+          ) :(
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <AnimatePresence mode="popLayout">
+                {slots.map((slot, i) => (
+                  <motion.button
+                    key={slot.start}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.02 }}
+                    disabled={slot.status === 'teaching' || (slot.status === 'priority_booked' && priority !== 'emergency')}
+                    onClick={() => setSelectedSlot(slot)}
+                    className={`p-4 rounded-2xl flex flex-col items-center gap-2 border-2 transition-all relative overflow-hidden group ${
+                      slot.status === 'free' ? (selectedSlot?.start === slot.start ? 'bg-vau-maroon/5 border-vau-maroon ring-4 ring-vau-maroon/20 scale-105 shadow-md' : 'bg-white border-gray-100 hover:border-vau-maroon hover:shadow-lg scale-100 hover:scale-105') :
+                      slot.status === 'teaching' ? 'bg-red-50 border-red-100 cursor-not-allowed grayscale' :
+                      slot.status === 'normal_booked' ? 'bg-green-50 border-green-100 hover:border-vau-gold' :
+                      'bg-orange-50 border-orange-100 cursor-not-allowed opacity-60'
+                    }`}
+                  >
+                    <Clock size={20} className={slot.status === 'teaching' ? 'text-red-400' : 'text-gray-400'} />
+                    <span className="font-black text-gray-900">{format(new Date(slot.start), 'HH:mm')}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-vau-maroon">30 MINS</span>
+                    
+                    {slot.status === 'teaching' && (
+                      <div className="absolute inset-0 bg-red-500/10 flex items-center justify-center rotate-12 -translate-y-4">
+                        <span className="text-[8px] font-black tracking-widest text-red-600 bg-white px-2 py-0.5 rounded shadow-sm">LECTURE</span>
+                      </div>
+                    )}
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>

@@ -357,3 +357,12 @@ const fetchAppointments = async () => {
                 <CalIcon size={48} className="mx-auto mb-4 opacity-10" />
                 <p className="font-medium italic">No appointments for today.</p>
               </div>
+              ) : upcoming.map((appt, i) => (
+              <div key={appt._id} className="relative flex gap-6 pb-6 last:pb-0 group">
+                {i !== upcoming.length - 1 && <div className="absolute left-3 top-10 bottom-0 w-0.5 bg-gray-100"></div>}
+                <div className="h-6 w-6 rounded-full bg-blue-500 border-4 border-white shadow-sm z-10 mt-1 shrink-0"></div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="font-black text-gray-900">{format(new Date(appt.requestedStart), 'HH:mm')} — {format(new Date(appt.requestedEnd), 'HH:mm')}</div>
+                    <span className="text-xs font-bold text-gray-400">30 MINS</span>
+                  </div>

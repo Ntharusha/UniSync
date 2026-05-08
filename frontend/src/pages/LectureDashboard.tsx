@@ -249,3 +249,16 @@ const fetchAppointments = async () => {
           <h2 className="text-xl font-black text-gray-900">New Requests</h2>
           <span className="text-xs font-black bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full">{newRequests.length}</span>
         </div>
+        <div className="space-y-3">
+          <AnimatePresence mode="popLayout">
+            {newRequests.length === 0 ? (
+              <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} className="bg-white p-8 rounded-2xl border border-gray-100 text-center text-gray-400">
+                <Check size={32} className="mx-auto mb-2 opacity-20" />
+                <p className="font-medium text-sm">No new requests today.</p>
+              </motion.div>
+            ) : newRequests.map((appt) => (
+              <AppointmentCard key={appt._id} appt={appt} onApprove={() => handleStatus(appt._id, 'approved')} onReject={() => handleStatus(appt._id, 'rejected')} onChat={() => setActiveChat(appt._id)} activeChatId={activeChat} accent="indigo" />
+            ))}
+          </AnimatePresence>
+        </div>
+      </section>

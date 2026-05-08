@@ -216,3 +216,13 @@ const fetchAppointments = async () => {
   );
   const approvedRequests = filtered.filter((a: Appointment) => a.status === 'approved' && new Date(a.requestedEnd).getTime() > now.getTime());
   const completedRequests = filtered.filter((a: Appointment) => a.status === 'approved' && new Date(a.requestedEnd).getTime() <= now.getTime());
+
+  return (
+    <div className="space-y-10">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <StatsCard label="New Requests" value={newRequests.length} color="indigo" />
+        <StatsCard label="Pending Requests" value={pendingRequests.length} color="amber" />
+        <StatsCard label="Approved Requests" value={approvedRequests.length} color="blue" />
+        <StatsCard label="Completed Requests" value={completedRequests.length} color="green" />
+      </div>

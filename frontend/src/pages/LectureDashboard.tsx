@@ -336,3 +336,17 @@ const fetchAppointments = async () => {
           <Chat appointmentId={activeChat} currentUser={user} onClose={() => setActiveChat(null)} />
         )}
       </AnimatePresence>
+
+      {/* ═══ TODAY'S SCHEDULE + SETTINGS ═══ */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-black text-gray-900">Today's Schedule</h2>
+          <div className="flex gap-4 items-center">
+            <button onClick={() => setShowRulesModal(true)} className="text-sm font-bold text-gray-500 hover:text-vau-maroon transition-colors">Settings</button>
+            <label className="text-sm font-bold text-vau-maroon hover:underline cursor-pointer">
+              Upload Timetable
+              <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && handleTimetableUpload(e.target.files[0])} />
+            </label>
+            <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">{format(new Date(), 'EEEE, MMMM do')}</div>
+          </div>
+        </div>

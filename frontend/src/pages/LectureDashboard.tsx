@@ -23,3 +23,70 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
     startTime: '08:00', 
     endTime: '17:00' 
   });
+  const [activeChat, setActiveChat] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchRules();
+
+    const handleUpdate = (data: any) => {
+      if (user._id === data.lecturerId) {
+        fetchAppointments();
+        fetchRules();
+      }
+    };
+
+    socket.on('slot:updated', handleUpdate);
+    return () => { socket.off('slot:updated', handleUpdate); };
+  }, [user._id]);
+
+  useEffect(() => {
+    if (showPreview && previewBlocks.length > 0) {
+      fetchConflicts();
+    }
+  }, [showPreview, previewBlocks]);
+
+  const fetchRules = async () => {
+    try {
+      const res = await fetch(`/api/availability/rules/${user._id}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await res.json();
+      setRules(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddRule = async () => {
+    try {
+      const res = await fetch('/api/availability/rules', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ ...newRule, lecturerId: user._id })
+      });
+      if (res.ok) {
+        fetchRules();
+        setShowRulesModal(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteRule = async (id: string) => {
+    try {
+      const res = await fetch(`/api/availability/rules/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) {
+        fetchRules();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };

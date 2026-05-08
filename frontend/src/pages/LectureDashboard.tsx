@@ -160,4 +160,35 @@ const fetchAppointments = async () => {
     } catch (err) {
       console.error(err);
     }
+  };const [activationResult, setActivationResult] = useState<{ count: number } | null>(null);
+
+  const handleActivate = async () => {
+    setIsActivating(true);
+    setActivationResult(null);
+    try {
+      const res = await fetch('/api/timetable/activate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          lecturerId: user._id,
+          blocks: previewBlocks
+        })
+      });
+      if (res.ok) {
+        const result = await res.json();
+        setActivationResult({ count: result.conflictsFound });
+        setTimeout(() => {
+          setShowPreview(false);
+          setActivationResult(null);
+          fetchAppointments();
+        }, 3000);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsActivating(false);
+    }
   };

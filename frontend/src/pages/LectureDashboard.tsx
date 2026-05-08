@@ -126,3 +126,20 @@ const fetchAppointments = async () => {
       console.error(err);
     }
   };
+  const handleStatus = async (id: string, status: string) => {
+    try {
+      const res = await fetch(`/api/appointments/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        fetchAppointments();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };

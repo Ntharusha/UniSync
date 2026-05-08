@@ -377,3 +377,11 @@ const fetchAppointments = async () => {
               </div>
             ))}
           </div>
+          <div className="bg-gray-50 p-6 flex items-center justify-between border-t border-gray-100">
+            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Office Hours</span>
+            <span className="text-sm font-bold text-gray-700 underline cursor-pointer">
+              {rules.filter(r => r.type === 'office_hours' && r.dayOfWeek === new Date().getDay()).map(r => `${r.startTime} - ${r.endTime}`).join(', ') || 'Not Set'}
+            </span>
+          </div>
+        </div>
+      </section>

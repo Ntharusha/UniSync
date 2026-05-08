@@ -143,3 +143,21 @@ const fetchAppointments = async () => {
       console.error(err);
     }
   };
+  const handleTimetableUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await fetch('/api/timetable/parse', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: formData
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPreviewBlocks(data);
+        setShowPreview(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };

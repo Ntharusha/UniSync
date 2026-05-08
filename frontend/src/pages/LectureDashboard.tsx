@@ -226,3 +226,18 @@ const fetchAppointments = async () => {
         <StatsCard label="Approved Requests" value={approvedRequests.length} color="blue" />
         <StatsCard label="Completed Requests" value={completedRequests.length} color="green" />
       </div>
+
+ {/* Priority Filter */}
+      <div className="flex items-center gap-4">
+        <span className="text-sm font-black text-gray-400 uppercase tracking-widest">Filter</span>
+        <select 
+          value={filterPriority}
+          onChange={(e) => setFilterPriority(e.target.value)}
+          className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 focus:ring-vau-maroon/20 shadow-sm"
+        >
+          <option value="all">All Priorities</option>
+          <option value="normal">Normal Only</option>
+          <option value="academic_urgent">Urgent Only</option>
+          <option value="emergency">Emergency Only</option>
+        </select>
+      </div>

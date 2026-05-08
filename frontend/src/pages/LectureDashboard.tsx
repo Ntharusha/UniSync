@@ -350,3 +350,10 @@ const fetchAppointments = async () => {
             <div className="text-sm font-bold text-gray-400 uppercase tracking-widest">{format(new Date(), 'EEEE, MMMM do')}</div>
           </div>
         </div>
+        <div className="bg-white rounded-[2rem] shadow-xl border border-gray-50 overflow-hidden">
+          <div className="p-8 space-y-6">
+            {upcoming.length === 0 ? (
+              <div className="py-12 text-center text-gray-400">
+                <CalIcon size={48} className="mx-auto mb-4 opacity-10" />
+                <p className="font-medium italic">No appointments for today.</p>
+              </div>

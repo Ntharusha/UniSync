@@ -519,3 +519,54 @@ const fetchAppointments = async () => {
                   <X size={24} />
                 </button>
               </div>
+
+              <div className="p-8 max-h-[60vh] overflow-y-auto space-y-8">
+                <div>
+                  <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">New Teaching Blocks</h4>
+                  <table className="w-full text-left">
+                    <thead className="sticky top-0 bg-white">
+                      <tr className="border-b border-gray-100">
+                        <th className="py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">Day</th>
+                        <th className="py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">Time</th>
+                        <th className="py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">Course</th>
+                        <th className="py-2 text-[10px] font-black uppercase tracking-widest text-gray-400">Room</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {previewBlocks.map((b, i) => (
+                        <tr key={i}>
+                          <td className="py-3 font-bold text-gray-900">{['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][b.dayOfWeek]}</td>
+                          <td className="py-3 text-sm font-medium text-gray-600">{b.startTime} - {b.endTime}</td>
+                          <td className="py-3 font-bold text-vau-maroon">{b.courseName}</td>
+                          <td className="py-3 text-sm font-medium text-gray-600">{b.room}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {conflicts.length > 0 && (
+                  <div className="bg-red-50 p-6 rounded-3xl border border-red-100">
+                    <h4 className="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <AlertCircle size={18} /> Conflicting Appointments ({conflicts.length})
+                    </h4>
+                    <div className="space-y-3">
+                      {conflicts.map((c, i) => (
+                        <div key={i} className="bg-white p-4 rounded-2xl flex items-center justify-between border border-red-200">
+                          <div>
+                            <p className="font-bold text-gray-900">{c.student.name}</p>
+                            <p className="text-xs text-gray-500">{format(new Date(c.requestedStart), 'MMM d')} at {format(new Date(c.requestedStart), 'HH:mm')}</p>
+                          </div>
+                          <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded ${
+                             c.priority === 'emergency' ? 'bg-red-100 text-red-600' :
+                             c.priority === 'academic_urgent' ? 'bg-amber-100 text-amber-600' :
+                             'bg-blue-100 text-blue-600'
+                           }`}>
+                            {c.priority}
+                           </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>

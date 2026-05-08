@@ -427,3 +427,14 @@ const fetchAppointments = async () => {
                             </p>
                           </div>
                         </div> 
+                        <button 
+                          onClick={() => handleDeleteRule(rule._id)}
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                          <Trash size={18} />
+                        </button>
+                      </div>
+                    ))}
+                    {rules.length === 0 && <p className="text-center py-8 text-gray-400 font-medium italic">No rules configured.</p>}
+                  </div>
+                </div>

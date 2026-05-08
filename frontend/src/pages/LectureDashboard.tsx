@@ -263,6 +263,8 @@ const fetchAppointments = async () => {
         </div>
       </section>
 
+
+
       {/* APPROVED REQUESTS */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
@@ -283,3 +285,47 @@ const fetchAppointments = async () => {
             </AnimatePresence>
           </div>
         </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        {/* COMPLETED REQUESTS */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-3 rounded-full bg-green-500"></div>
+            <h2 className="text-lg font-black text-gray-900">Completed</h2>
+            <span className="text-xs font-black bg-green-100 text-green-600 px-2.5 py-0.5 rounded-full">{completedRequests.length}</span>
+          </div>
+          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            <AnimatePresence mode="popLayout">
+              {completedRequests.length === 0 ? (
+                <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} className="bg-white p-6 rounded-2xl border border-gray-100 text-center text-gray-400">
+                  <Check size={28} className="mx-auto mb-2 opacity-20" />
+                  <p className="font-medium text-sm">No completed appointments.</p>
+                </motion.div>
+              ) : completedRequests.map((appt) => (
+                <AppointmentCard key={appt._id} appt={appt} onChat={() => setActiveChat(appt._id)} activeChatId={activeChat} accent="green" compact />
+              ))}
+            </AnimatePresence>
+          </div>
+        </section>
+      </div>

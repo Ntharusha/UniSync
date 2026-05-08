@@ -262,3 +262,5 @@ const fetchAppointments = async () => {
           </AnimatePresence>
         </div>
       </section>
+
+      

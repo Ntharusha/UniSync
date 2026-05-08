@@ -468,3 +468,34 @@ const fetchAppointments = async () => {
                         ))}
                       </select>
                     </div>           
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Start Time</label>
+                      <input 
+                        type="time"
+                        className="w-full bg-white border-none rounded-xl px-4 py-3 font-bold text-sm shadow-sm"
+                        value={newRule.startTime}
+                        onChange={(e) => setNewRule({...newRule, startTime: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">End Time</label>
+                      <input 
+                        type="time"
+                        className="w-full bg-white border-none rounded-xl px-4 py-3 font-bold text-sm shadow-sm"
+                        value={newRule.endTime}
+                        onChange={(e) => setNewRule({...newRule, endTime: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    onClick={handleAddRule}
+                    className="w-full bg-vau-maroon text-white py-3 rounded-xl font-black text-sm shadow-lg hover:bg-gray-800 transition-all mt-2"
+                  >
+                    Add Availability Rule
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>

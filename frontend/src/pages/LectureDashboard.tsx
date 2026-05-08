@@ -366,3 +366,14 @@ const fetchAppointments = async () => {
                     <div className="font-black text-gray-900">{format(new Date(appt.requestedStart), 'HH:mm')} — {format(new Date(appt.requestedEnd), 'HH:mm')}</div>
                     <span className="text-xs font-bold text-gray-400">30 MINS</span>
                   </div>
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-black text-blue-900">{(appt.studentId as UserType)?.name}</p>
+                      <p className="text-xs text-blue-600 font-bold">{(appt.studentId as UserType)?.regNumber}</p>
+                    </div>
+                    <AlertCircle size={20} className="text-blue-300" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>

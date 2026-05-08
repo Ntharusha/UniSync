@@ -90,3 +90,39 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
       console.error(err);
     }
   };
+const fetchAppointments = async () => {
+    setLoading(true);
+    try {
+      const apptRes = await fetch(`/api/appointments?lecturerId=${user._id}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await apptRes.json();
+      if (Array.isArray(data)) setAppointments(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchConflicts = async () => {
+    try {
+      const res = await fetch('/api/timetable/conflicts', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          lecturerId: user._id,
+          blocks: previewBlocks
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setConflicts(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };

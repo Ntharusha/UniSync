@@ -438,3 +438,33 @@ const fetchAppointments = async () => {
                     {rules.length === 0 && <p className="text-center py-8 text-gray-400 font-medium italic">No rules configured.</p>}
                   </div>
                 </div>
+
+     {/* Add Rule Form */}
+                <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 space-y-4">
+                  <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                    <Plus size={18} className="text-vau-maroon" /> Add New Rule
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Type</label>
+                      <select 
+                        className="w-full bg-white border-none rounded-xl px-4 py-3 font-bold text-sm shadow-sm"
+                        value={newRule.type}
+                        onChange={(e) => setNewRule({...newRule, type: e.target.value as any})}
+                      >
+                        <option value="office_hours">Office Hours</option>
+                        <option value="blackout">Blackout Period</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Day</label>
+                      <select 
+                        className="w-full bg-white border-none rounded-xl px-4 py-3 font-bold text-sm shadow-sm"
+                        value={newRule.dayOfWeek}
+                        onChange={(e) => setNewRule({...newRule, dayOfWeek: parseInt(e.target.value)})}
+                      >
+                        {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d, i) => (
+                          <option key={i} value={i}>{d}</option>
+                        ))}
+                      </select>
+                    </div>           

@@ -160,7 +160,10 @@ const fetchAppointments = async () => {
     } catch (err) {
       console.error(err);
     }
-  };const [activationResult, setActivationResult] = useState<{ count: number } | null>(null);
+  };
+  
+
+  const [activationResult, setActivationResult] = useState<{ count: number } | null>(null);
 
   const handleActivate = async () => {
     setIsActivating(true);
@@ -177,6 +180,8 @@ const fetchAppointments = async () => {
           blocks: previewBlocks
         })
       });
+
+
       if (res.ok) {
         const result = await res.json();
         setActivationResult({ count: result.conflictsFound });
@@ -192,3 +197,22 @@ const fetchAppointments = async () => {
       setIsActivating(false);
     }
   };
+
+  const filtered = filterPriority === 'all' 
+    ? appointments 
+    : appointments.filter(a => a.priority === filterPriority);
+
+  const pending = filtered.filter((a: Appointment) => a.status === 'pending');
+  const upcoming = filtered.filter((a: Appointment) => a.status === 'approved');
+
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+  const newRequests = filtered.filter((a: Appointment) => 
+    a.status === 'pending' && a.createdAt && (new Date(a.createdAt).getTime() >= startOfDay)
+  );
+  const pendingRequests = filtered.filter((a: Appointment) => 
+    a.status === 'pending' && (!a.createdAt || new Date(a.createdAt).getTime() < startOfDay)
+  );
+  const approvedRequests = filtered.filter((a: Appointment) => a.status === 'approved' && new Date(a.requestedEnd).getTime() > now.getTime());
+  const completedRequests = filtered.filter((a: Appointment) => a.status === 'approved' && new Date(a.requestedEnd).getTime() <= now.getTime());

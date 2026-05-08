@@ -570,3 +570,46 @@ const fetchAppointments = async () => {
                   </div>
                 )}
               </div>
+
+ <div className="p-8 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                {activationResult ? (
+                  <motion.div 
+                    initial={{ opacity:0, y:10 }}
+                    animate={{ opacity:1, y:0 }}
+                    className="flex-1 flex items-center justify-center gap-3 text-green-600 font-black"
+                  >
+                    <Check size={24} className="bg-green-100 rounded-full p-1" />
+                    Timetable activated! {activationResult.count} conflicts resolved.
+                  </motion.div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 text-amber-600">
+                      <AlertCircle size={20} />
+                      <p className="text-xs font-bold">Activating will cancel any conflicting appointments.</p>
+                    </div>
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => setShowPreview(false)}
+                        className="px-6 py-3 rounded-2xl font-bold text-gray-400 hover:text-gray-900 transition-colors"
+                      >
+                        Discard
+                      </button>
+                      <button 
+                        onClick={handleActivate}
+                        disabled={isActivating}
+                        className="bg-vau-maroon text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:shadow-vau-maroon/20 hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                      >
+                        {isActivating ? 'Activating...' : 'Confirm & Activate'}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+

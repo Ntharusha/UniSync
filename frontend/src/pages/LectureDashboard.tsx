@@ -405,3 +405,25 @@ const fetchAppointments = async () => {
                   <X size={24} />
                 </button>
               </div>   
+
+             <div className="p-8 max-h-[60vh] overflow-y-auto space-y-8">
+                {/* Current Rules */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-black text-gray-400 uppercase tracking-widest">Active Rules</h4>
+                  <div className="space-y-2">
+                    {rules.map((rule) => (
+                      <div key={rule._id} className="bg-gray-50 p-4 rounded-2xl flex items-center justify-between border border-gray-100 hover:border-gray-200 transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className={`p-2 rounded-xl ${
+                            rule.type === 'office_hours' ? 'bg-green-100 text-green-600' : 
+                            rule.type === 'blackout' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                          }`}>
+                            <Clock size={20} />
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-900 capitalize">{rule.type.replace('_', ' ')}</p>
+                            <p className="text-xs text-gray-500 font-medium">
+                              {rule.dayOfWeek !== undefined ? ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][rule.dayOfWeek] : rule.date ? format(new Date(rule.date), 'MMM d, yyyy') : 'All'} • {rule.startTime} - {rule.endTime}
+                            </p>
+                          </div>
+                        </div> 

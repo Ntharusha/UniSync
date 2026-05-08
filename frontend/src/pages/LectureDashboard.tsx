@@ -499,3 +499,23 @@ const fetchAppointments = async () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Timetable Preview Modal */}
+      <AnimatePresence>
+        {showPreview && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity:0, scale:0.95 }}
+              animate={{ opacity:1, scale:1 }}
+              exit={{ opacity:0, scale:0.95 }}
+              className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-4xl overflow-hidden"
+            >
+              <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-vau-maroon text-white">
+                <div>
+                  <h3 className="text-2xl font-black">Verify Timetable</h3>
+                  <p className="opacity-70 font-medium">Please review the parsed blocks before activating.</p>
+                </div>
+                <button onClick={() => setShowPreview(false)} className="p-2 hover:bg-white/10 rounded-full">
+                  <X size={24} />
+                </button>
+              </div>

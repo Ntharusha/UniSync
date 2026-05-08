@@ -329,3 +329,10 @@ const fetchAppointments = async () => {
           </div>
         </section>
       </div>
+
+      {/* ═══ Chat Panel ═══ */}
+      <AnimatePresence>
+        {activeChat && (
+          <Chat appointmentId={activeChat} currentUser={user} onClose={() => setActiveChat(null)} />
+        )}
+      </AnimatePresence>

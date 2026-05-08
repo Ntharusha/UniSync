@@ -241,3 +241,11 @@ const fetchAppointments = async () => {
           <option value="emergency">Emergency Only</option>
         </select>
       </div>
+
+      {/* ═══ NEW REQUESTS (Today's pending) ═══ */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="h-3 w-3 rounded-full bg-indigo-500 animate-pulse"></div>
+          <h2 className="text-xl font-black text-gray-900">New Requests</h2>
+          <span className="text-xs font-black bg-indigo-100 text-indigo-600 px-2.5 py-0.5 rounded-full">{newRequests.length}</span>
+        </div>

@@ -613,3 +613,71 @@ const fetchAppointments = async () => {
   );
 }
 
+function StatsCard({ label, value, color }: { label: string, value: any, color: string }) {
+  const colorMap: Record<string, string> = {
+    'vau-maroon': 'bg-vau-maroon text-vau-gold',
+    'amber': 'bg-amber-500 text-white',
+    'blue': 'bg-blue-500 text-white',
+    'green': 'bg-green-500 text-white',
+    'indigo': 'bg-indigo-500 text-white'
+  };
+  const classes = colorMap[color] || 'bg-gray-500 text-white';
+  
+  return (
+    <div className={`${classes} p-6 rounded-3xl shadow-xl space-y-1`}>
+      <p className="text-xs font-black uppercase tracking-widest opacity-70">{label}</p>
+      <p className="text-4xl font-black">{value}</p>
+    </div>
+  );
+}
+
+function AppointmentCard({ appt, onApprove, onReject, onChat, activeChatId, accent, compact }: {
+  appt: Appointment; onApprove?: () => void; onReject?: () => void; onChat?: () => void;
+  activeChatId: string | null; accent: string; compact?: boolean;
+}) {
+  const student = appt.studentId as UserType;
+  const accentMap: Record<string, { badge: string; border: string }> = {
+    indigo: { badge: 'bg-indigo-50 border-indigo-100', border: 'border-indigo-100' },
+    amber: { badge: 'bg-amber-50 border-amber-100', border: 'border-amber-100' },
+    blue: { badge: 'bg-blue-50 border-blue-100', border: 'border-blue-100' },
+    green: { badge: 'bg-green-50 border-green-100', border: 'border-green-100' },
+  };
+  const colors = accentMap[accent] || accentMap.blue;
+
+  return (
+    <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+      className={`bg-white ${compact ? 'p-4 rounded-2xl' : 'p-5 rounded-3xl shadow-lg shadow-gray-200/50'} border ${colors.border} flex gap-4`}
+    >
+      <div className={`${compact ? 'h-10 w-10 text-sm' : 'h-14 w-14 text-lg'} bg-gray-100 rounded-xl flex items-center justify-center font-black text-gray-400 shrink-0`}>
+        {student?.name?.[0] || '?'}
+      </div>
+      <div className="flex-1 min-w-0 space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className={`font-bold text-gray-900 truncate ${compact ? 'text-sm' : 'text-base'}`}>{student?.name || 'Unknown'}</h3>
+            <div className="flex flex-wrap gap-2 mt-1">
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${
+                appt.priority === 'emergency' ? 'bg-red-100 text-red-600' :
+                appt.priority === 'academic_urgent' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'
+              }`}>{appt.priority}</span>
+              <span className="flex items-center gap-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                <CalIcon size={10} /> {format(new Date(appt.requestedStart), 'MMM d')}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 text-vau-maroon bg-vau-maroon/5 px-2 py-1 rounded-full font-black text-[11px] shrink-0">
+            <Clock size={12} /> {format(new Date(appt.requestedStart), 'HH:mm')}
+          </div>
+        </div>
+        {!compact && <p className="text-gray-500 text-sm italic font-medium truncate">"{appt.reason}"</p>}
+        <div className="flex gap-2 pt-1">
+          {onApprove && (
+            <button onClick={onApprove} className={`${compact ? 'flex-1 h-8 text-xs' : 'flex-1 h-9 text-sm'} bg-vau-maroon text-white rounded-lg font-bold flex items-center justify-center gap-1.5 hover:bg-vau-maroon-light transition-colors`}>
+              <Check size={compact ? 14 : 16} /> Approve
+            </button>
+          )}
+          {onReject && (
+            <button onClick={onReject} className={`${compact ? 'h-8 px-2.5' : 'h-9 px-3'} border border-gray-200 text-gray-400 rounded-lg hover:bg-gray-50 transition-colors`}>
+              <X size={compact ? 14 : 16} />
+            </button>
+          )}

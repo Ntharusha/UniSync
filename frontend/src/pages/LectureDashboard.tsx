@@ -681,3 +681,13 @@ function AppointmentCard({ appt, onApprove, onReject, onChat, activeChatId, acce
               <X size={compact ? 14 : 16} />
             </button>
           )}
+          {onChat && (
+            <button onClick={onChat} className={`${compact ? 'h-8 px-2.5' : 'h-9 px-3'} rounded-lg transition-colors ${activeChatId === appt._id ? 'bg-vau-maroon text-vau-gold' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}>
+              <MessageSquare size={compact ? 14 : 16} />
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}

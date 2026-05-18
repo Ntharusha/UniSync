@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 
@@ -35,6 +36,16 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
+// Serve static assets from backend/dist folder
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Serve index.html for any request that doesn't match API endpoints
+app.get('*', (req, res, next) => {
+  if (req.originalUrl.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

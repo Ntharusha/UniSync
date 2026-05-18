@@ -38,7 +38,6 @@ export default function App() {
         <Router>
             <Routes>
                 <Route path="/login" element={<Login onLogin={setUser} />} />
-
                 <Route path="/" element={
                     user ? <DashboardLayout user={user} onLogout={() => setUser(null)} /> : <Navigate to="/login" />
                 }>

@@ -160,5 +160,3 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
   );
 }
 
-=======
->>>>>>> origin/main

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 import Login from './pages/Login';
-import Signup from './pages/Signup';
 import DashboardLayout from './components/DashboardLayout';
 import StudentDashboard from './pages/StudentDashboard';
 import LecturerDashboard from './pages/LecturerDashboard';
@@ -39,7 +38,6 @@ export default function App() {
         <Router>
             <Routes>
                 <Route path="/login" element={<Login onLogin={setUser} />} />
-                <Route path="/signup" element={<Signup onLogin={setUser} />} />
 
                 <Route path="/" element={
                     user ? <DashboardLayout user={user} onLogout={() => setUser(null)} /> : <Navigate to="/login" />

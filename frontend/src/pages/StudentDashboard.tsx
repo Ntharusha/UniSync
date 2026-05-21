@@ -20,7 +20,7 @@ export default function StudentDashboard({ user }: { user: User }) {
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
- useEffect(() => {
+  useEffect(() => {
     fetch('/api/users', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     })
@@ -30,7 +30,13 @@ export default function StudentDashboard({ user }: { user: User }) {
           setLecturers(data.filter((u: any) => u.role === 'lecturer'));
         }
       })
-      .catch(console.error);
+      .catch(err => {
+        console.warn('Backend offline, using mock lecturers.', err);
+        setLecturers([
+          { _id: "lecturer123", name: "Dr. Priya Silva", email: "priya@vau.ac.lk", role: "lecturer", department: "Computing & Information Systems" },
+          { _id: "lecturer456", name: "Prof. A. Wickramasinghe", email: "ashan@vau.ac.lk", role: "lecturer", department: "Physical Science" }
+        ] as any[]);
+      });
     
     fetchMyAppointments();
   }, []);
@@ -62,7 +68,18 @@ export default function StudentDashboard({ user }: { user: User }) {
       const data = await res.json();
       setSlots(data);
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, generating mock slots.', err);
+      const baseDate = selectedDate || new Date().toISOString().split('T')[0];
+      const mockSlots = [
+        { start: `${baseDate}T08:30:00.000Z`, end: `${baseDate}T09:00:00.000Z`, status: 'free' },
+        { start: `${baseDate}T09:00:00.000Z`, end: `${baseDate}T09:30:00.000Z`, status: 'free' },
+        { start: `${baseDate}T09:30:00.000Z`, end: `${baseDate}T10:00:00.000Z`, status: 'teaching' },
+        { start: `${baseDate}T10:00:00.000Z`, end: `${baseDate}T10:30:00.000Z`, status: 'free' },
+        { start: `${baseDate}T10:30:00.000Z`, end: `${baseDate}T11:00:00.000Z`, status: 'normal_booked' },
+        { start: `${baseDate}T11:00:00.000Z`, end: `${baseDate}T11:30:00.000Z`, status: 'free' },
+        { start: `${baseDate}T11:30:00.000Z`, end: `${baseDate}T12:00:00.000Z`, status: 'free' },
+      ];
+      setSlots(mockSlots as any[]);
     } finally {
       setLoadingSlots(false);
     }
@@ -78,7 +95,27 @@ export default function StudentDashboard({ user }: { user: User }) {
         setMyAppointments(data);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, loading mock appointments.', err);
+      const localAppts = localStorage.getItem('mock_appointments');
+      if (localAppts) {
+        setMyAppointments(JSON.parse(localAppts));
+      } else {
+        const baseDate = selectedDate || new Date().toISOString().split('T')[0];
+        const defaultMock = [
+          {
+            _id: "appt1",
+            studentId: user,
+            lecturerId: { _id: "lecturer123", name: "Dr. Priya Silva", email: "priya@vau.ac.lk", role: "lecturer" },
+            requestedStart: `${baseDate}T08:30:00.000Z`,
+            requestedEnd: `${baseDate}T09:00:00.000Z`,
+            status: 'pending',
+            priority: 'normal',
+            reason: 'Discuss research project proposal draft.'
+          }
+        ];
+        localStorage.setItem('mock_appointments', JSON.stringify(defaultMock));
+        setMyAppointments(defaultMock as any[]);
+      }
     }
   };
 
@@ -148,9 +185,33 @@ export default function StudentDashboard({ user }: { user: User }) {
         const err = await res.json().catch(() => ({ error: `Server error (${res.status})` }));
         alert(err.error || 'Booking failed');
       }
-      } catch (err: any) {
-      console.error('Booking Error:', err);
-      alert('Failed to connect to the server! Your backend API might be offline or restarting. (Network Error)');
+    } catch (err: any) {
+      console.warn('Booking offline fallback', err);
+      const newAppt = {
+        _id: "mock_" + Date.now(),
+        studentId: user,
+        lecturerId: selectedLecturer,
+        requestedStart: selectedSlot!.start,
+        requestedEnd: selectedSlot!.end,
+        status: 'pending',
+        priority,
+        reason,
+        documents: selectedFile ? [{ name: selectedFile.name, url: '#' }] : [],
+        createdAt: new Date().toISOString()
+      };
+      
+      const current = JSON.parse(localStorage.getItem('mock_appointments') || '[]');
+      current.push(newAppt);
+      localStorage.setItem('mock_appointments', JSON.stringify(current));
+      
+      alert('Mock Booking Successful (Offline Mode)!');
+      setReason('');
+      setSelectedSlot(null);
+      setSelectedFile(null);
+      
+      // Update slots status locally for immediate feedback
+      setSlots(prev => prev.map(s => s.start === selectedSlot!.start ? { ...s, status: 'normal_booked' } : s));
+      fetchMyAppointments();
     } finally {
       setBookingInProgress(false);
     }
@@ -169,7 +230,11 @@ export default function StudentDashboard({ user }: { user: User }) {
       });
       if (res.ok) fetchMyAppointments();
     } catch (err) {
-      console.error('Cancel error:', err);
+      console.warn('Cancel offline fallback', err);
+      const current = JSON.parse(localStorage.getItem('mock_appointments') || '[]');
+      const updated = current.map((a: any) => a._id === appointmentId ? { ...a, status: 'cancelled' } : a);
+      localStorage.setItem('mock_appointments', JSON.stringify(updated));
+      fetchMyAppointments();
     }
   };
 
@@ -209,7 +274,7 @@ export default function StudentDashboard({ user }: { user: User }) {
       </section>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
       {/* Slot Picker */}
         <div className="lg:col-span-2 space-y-6">

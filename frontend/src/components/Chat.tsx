@@ -24,7 +24,11 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
       .then(data => {
         if (Array.isArray(data)) setMessages(data);
       })
-      .catch(console.error);
+      .catch(err => {
+        console.warn('Backend offline, loading mock messages.', err);
+        const allMockMsgs = JSON.parse(localStorage.getItem('mock_messages') || '{}');
+        setMessages(allMockMsgs[appointmentId] || []);
+      });
 
     // Listen for new messages
     const handleNewMessage = (msg: Message) => {
@@ -44,7 +48,7 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
   const handleSend = async () => {
     if (!input.trim()) return;
     try {
-      await fetch('/api/messages', {
+      const res = await fetch('/api/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,9 +60,28 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
           body: input
         })
       });
-      setInput('');
+      if (res.ok) {
+        setInput('');
+      } else {
+        throw new Error('Send failed');
+      }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, saving mock message.', err);
+      const newMsg: Message = {
+        _id: "mock_msg_" + Date.now(),
+        appointmentId,
+        senderId: currentUser,
+        body: input,
+        createdAt: new Date().toISOString()
+      };
+      
+      const allMockMsgs = JSON.parse(localStorage.getItem('mock_messages') || '{}');
+      if (!allMockMsgs[appointmentId]) allMockMsgs[appointmentId] = [];
+      allMockMsgs[appointmentId].push(newMsg);
+      localStorage.setItem('mock_messages', JSON.stringify(allMockMsgs));
+      
+      setMessages(prev => [...prev, newMsg]);
+      setInput('');
     }
   };
 

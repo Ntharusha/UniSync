@@ -35,7 +35,35 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
         setError(err.error || 'Authentication failed. Please check your credentials.');
       }
     } catch (err) {
-      setError('An error occurred. Please try again later.');
+      // Mock Fallback when backend is offline
+      if (email === 'saman@vau.ac.lk' && password === 'admin123') {
+        const mockUser = {
+          _id: "student123",
+          name: "Saman Kumara",
+          email: "saman@vau.ac.lk",
+          role: "student",
+          regNumber: "2020/ICT/42",
+          department: "Physical Science"
+        };
+        localStorage.setItem('token', 'mock-token-student');
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        onLogin(mockUser);
+        navigate('/');
+      } else if (email === 'priya@vau.ac.lk' && password === 'admin123') {
+        const mockUser = {
+          _id: "lecturer123",
+          name: "Dr. Priya Silva",
+          email: "priya@vau.ac.lk",
+          role: "lecturer",
+          department: "Computing & Information Systems"
+        };
+        localStorage.setItem('token', 'mock-token-lecturer');
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        onLogin(mockUser);
+        navigate('/');
+      } else {
+        setError('Connection failed. For offline test, use saman@vau.ac.lk / admin123 or priya@vau.ac.lk / admin123');
+      }
     } finally {
       setLoading(false);
     }

@@ -54,7 +54,17 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
       const data = await res.json();
       setRules(data);
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, using mock rules.', err);
+      const localRules = localStorage.getItem('mock_rules');
+      if (localRules) {
+        setRules(JSON.parse(localRules));
+      } else {
+        const defaultRules = [
+          { _id: "rule1", lecturerId: user._id, type: 'office_hours', dayOfWeek: new Date().getDay(), startTime: '09:00', endTime: '12:00' }
+        ];
+        localStorage.setItem('mock_rules', JSON.stringify(defaultRules));
+        setRules(defaultRules as any[]);
+      }
     }
   };
 
@@ -73,7 +83,13 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
         setShowRulesModal(false);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, adding mock rule locally.', err);
+      const current = JSON.parse(localStorage.getItem('mock_rules') || '[]');
+      const addedRule = { ...newRule, _id: "mock_rule_" + Date.now(), lecturerId: user._id };
+      current.push(addedRule);
+      localStorage.setItem('mock_rules', JSON.stringify(current));
+      fetchRules();
+      setShowRulesModal(false);
     }
   };
 
@@ -87,10 +103,15 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
         fetchRules();
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, deleting mock rule locally.', err);
+      const current = JSON.parse(localStorage.getItem('mock_rules') || '[]');
+      const updated = current.filter((r: any) => r._id !== id);
+      localStorage.setItem('mock_rules', JSON.stringify(updated));
+      fetchRules();
     }
   };
-const fetchAppointments = async () => {
+
+  const fetchAppointments = async () => {
     setLoading(true);
     try {
       const apptRes = await fetch(`/api/appointments?lecturerId=${user._id}`, {
@@ -99,7 +120,39 @@ const fetchAppointments = async () => {
       const data = await apptRes.json();
       if (Array.isArray(data)) setAppointments(data);
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, loading mock appointments.', err);
+      const localAppts = localStorage.getItem('mock_appointments');
+      if (localAppts) {
+        setAppointments(JSON.parse(localAppts));
+      } else {
+        const baseDate = new Date().toISOString().split('T')[0];
+        const defaultMock = [
+          {
+            _id: "appt1",
+            studentId: { _id: "student123", name: "Saman Kumara", regNumber: "2020/ICT/42", role: "student" },
+            lecturerId: user._id,
+            requestedStart: `${baseDate}T09:00:00.000Z`,
+            requestedEnd: `${baseDate}T09:30:00.000Z`,
+            status: 'pending',
+            priority: 'normal',
+            reason: 'Struggling with assignments.',
+            createdAt: new Date().toISOString()
+          },
+          {
+            _id: "appt2",
+            studentId: { _id: "student456", name: "Nimal Perera", regNumber: "2020/ICT/18", role: "student" },
+            lecturerId: user._id,
+            requestedStart: `${baseDate}T10:30:00.000Z`,
+            requestedEnd: `${baseDate}T11:00:00.000Z`,
+            status: 'approved',
+            priority: 'academic_urgent',
+            reason: 'Exam extension request.',
+            createdAt: new Date().toISOString()
+          }
+        ];
+        localStorage.setItem('mock_appointments', JSON.stringify(defaultMock));
+        setAppointments(defaultMock as any[]);
+      }
     } finally {
       setLoading(false);
     }
@@ -123,9 +176,11 @@ const fetchAppointments = async () => {
         setConflicts(data);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, mocking conflicts as empty.', err);
+      setConflicts([]);
     }
   };
+
   const handleStatus = async (id: string, status: string) => {
     try {
       const res = await fetch(`/api/appointments/${id}`, {
@@ -140,9 +195,14 @@ const fetchAppointments = async () => {
         fetchAppointments();
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, updating status locally.', err);
+      const current = JSON.parse(localStorage.getItem('mock_appointments') || '[]');
+      const updated = current.map((a: any) => a._id === id ? { ...a, status } : a);
+      localStorage.setItem('mock_appointments', JSON.stringify(updated));
+      fetchAppointments();
     }
   };
+
   const handleTimetableUpload = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -158,11 +218,16 @@ const fetchAppointments = async () => {
         setShowPreview(true);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, parsing mock timetable.', err);
+      const mockBlocks = [
+        { dayOfWeek: 1, startTime: '09:00', endTime: '11:00', subject: 'Advanced Programming' },
+        { dayOfWeek: 3, startTime: '13:00', endTime: '15:00', subject: 'Database Management Systems' }
+      ];
+      setPreviewBlocks(mockBlocks as any[]);
+      setShowPreview(true);
     }
   };
   
-
   const [activationResult, setActivationResult] = useState<{ count: number } | null>(null);
 
   const handleActivate = async () => {
@@ -181,7 +246,6 @@ const fetchAppointments = async () => {
         })
       });
 
-
       if (res.ok) {
         const result = await res.json();
         setActivationResult({ count: result.conflictsFound });
@@ -192,7 +256,26 @@ const fetchAppointments = async () => {
         }, 3000);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Backend offline, mocking activation success.', err);
+      setTimeout(() => {
+        setActivationResult({ count: 0 });
+        setTimeout(() => {
+          setShowPreview(false);
+          setActivationResult(null);
+          // Insert office hours rules based on timetable
+          const mockNewRules = previewBlocks.map((b: any, index) => ({
+            _id: "mock_rule_tt_" + index + "_" + Date.now(),
+            lecturerId: user._id,
+            type: 'office_hours',
+            dayOfWeek: b.dayOfWeek,
+            startTime: b.startTime,
+            endTime: b.endTime
+          }));
+          localStorage.setItem('mock_rules', JSON.stringify(mockNewRules));
+          fetchRules();
+          fetchAppointments();
+        }, 2000);
+      }, 1000);
     } finally {
       setIsActivating(false);
     }
@@ -265,7 +348,9 @@ const fetchAppointments = async () => {
 
 
 
-      {/* APPROVED REQUESTS */}
+      {/* APPROVED & COMPLETED REQUESTS GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* APPROVED REQUESTS */}
         <section className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-3 w-3 rounded-full bg-blue-500"></div>

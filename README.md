@@ -88,6 +88,3 @@ Based on real-world standards including:
 - GDPR, FERPA compliance models
 - OWASP security guidelines
 - AWS cloud architecture best practices
-
----
->>>>>>> origin/main

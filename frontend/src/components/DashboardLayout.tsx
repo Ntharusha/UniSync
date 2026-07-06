@@ -64,3 +64,38 @@ export default function DashboardLayout({ user, onLogout }: { user: UserType, on
           </button>
         </div>
       </aside>
+
+{/* Main Content */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
+            <span>Home</span>
+            <ChevronRight size={14} />
+            <span className="font-medium text-gray-900 capitalize">{user.role} Dashboard</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => navigate('/notifications')}
+              className="p-2 text-gray-400 hover:text-vau-maroon transition-colors relative"
+            >
+              <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[8px] font-black text-white flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            <div className="h-8 w-px bg-gray-200 mx-2"></div>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-900 leading-none">{user.name}</p>
+                <p className="text-xs text-gray-500 mt-1 capitalize">{user.role}</p>
+              </div>
+              <div className="h-10 w-10 bg-vau-gold/20 text-vau-maroon rounded-full flex items-center justify-center font-bold">
+                {user.name[0]}
+              </div>
+            </div>
+          </div>
+        </header>

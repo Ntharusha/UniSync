@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "npx kill-port 3001 && tsx src/index.ts",
     "build": "tsc",
-    "start": "npx kill-port 3001 && tsx src/index.ts",
+    "start": "node dist/index.js",
     "test": "NODE_ENV=test jest --detectOpenHandles",
     "seed": "tsx src/seed.ts",
     "seed:atlas": "SEED_TARGET=atlas NODE_ENV=production tsx src/seed.ts"

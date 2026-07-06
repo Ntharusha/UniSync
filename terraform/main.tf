@@ -7,12 +7,12 @@ resource "aws_security_group" "unisync_sg" {
   name        = "unisync-backend-sg"
   description = "Allow SSH and Backend API traffic"
 
-  # SSH Access
+  # SSH Access (WARNING: Restrict this to trusted IP ranges in production!)
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # Change to administrative IP blocks in production
   }
 
   # Backend Express Port
@@ -46,12 +46,25 @@ resource "aws_instance" "unisync_backend" {
 
   vpc_security_group_ids = [aws_security_group.unisync_sg.id]
 
-  # Simple bash script to install Docker & node/npm on startup
+  # Script to install Docker, Docker Compose, & Node.js v20 on startup
   user_data = <<-EOF
               #!/bin/bash
               sudo apt-get update -y
-              sudo apt-get install -y nodejs npm git
-              # Run backend daemon setup here if needed
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release git
+
+              # Install Docker
+              sudo mkdir -p /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update -y
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+              # Install NodeSource Node.js v20 LTS
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+
+              # Configure docker permissions
+              sudo usermod -aG docker ubuntu
               EOF
 
   tags = {

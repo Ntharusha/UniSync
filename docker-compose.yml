@@ -30,6 +30,19 @@ services:
     networks:
       - unisync_network
 
+  # Frontend React application service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: unisync_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - unisync_network
+
 volumes:
   mongo_data:
 

@@ -147,7 +147,7 @@ export default function ChatRoom() {
       {/* Input bar */}
       <View className="p-4 bg-white border-t border-gray-100 flex-row items-center gap-3">
         <TextInput
-          className="flex-1 bg-gray-50 border border-gray-150 rounded-2xl px-4 py-3 text-gray-850 font-semibold text-sm max-h-[100px]"
+          className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-gray-800 font-semibold text-sm max-h-[100px]"
           placeholder="Type message..."
           placeholderTextColor="#9CA3AF"
           multiline

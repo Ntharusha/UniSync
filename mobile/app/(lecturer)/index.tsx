@@ -111,7 +111,7 @@ export default function LecturerRequests() {
         activeOpacity={0.8}
         onPress={() => setFilterPriority(p)}
         className={`flex-1 p-3 rounded-2xl border items-center justify-center ${
-          isSelected ? `${activeBg} border-transparent` : 'bg-white border-gray-150'
+          isSelected ? `${activeBg} border-transparent` : 'bg-white border-gray-200'
         }`}
       >
         <Text className={`font-black text-xs ${isSelected ? 'text-white' : 'text-gray-800'}`}>

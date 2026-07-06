@@ -25,7 +25,7 @@ export default function PrioritySelector({ value, onChange }: PrioritySelectorPr
       title: 'Normal',
       desc: 'Routine query',
       bg: 'bg-green-50',
-      border: 'border-green-150',
+      border: 'border-green-200',
       textColor: 'text-green-800',
       icon: 'checkmark-circle-outline',
       iconColor: colors.success,
@@ -35,7 +35,7 @@ export default function PrioritySelector({ value, onChange }: PrioritySelectorPr
       title: 'Urgent',
       desc: 'Academic deadline',
       bg: 'bg-amber-50',
-      border: 'border-amber-150',
+      border: 'border-amber-200',
       textColor: 'text-amber-800',
       icon: 'alert-circle-outline',
       iconColor: colors.warning,
@@ -45,7 +45,7 @@ export default function PrioritySelector({ value, onChange }: PrioritySelectorPr
       title: 'Emergency',
       desc: 'Medical / Critical',
       bg: 'bg-red-50',
-      border: 'border-red-150',
+      border: 'border-red-200',
       textColor: 'text-red-800',
       icon: 'warning-outline',
       iconColor: colors.danger,
@@ -67,7 +67,7 @@ export default function PrioritySelector({ value, onChange }: PrioritySelectorPr
               activeOpacity={0.8}
               onPress={() => onChange(p.value)}
               className={`p-4 rounded-2xl border-2 flex-row items-center ${
-                isSelected ? `${p.bg} ${p.border}` : 'bg-white border-gray-150'
+                isSelected ? `${p.bg} ${p.border}` : 'bg-white border-gray-200'
               }`}
             >
               <Ionicons

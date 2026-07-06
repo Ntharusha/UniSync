@@ -9,6 +9,7 @@ import { colors } from '../../constants/theme';
 import AvailabilityRuleCard from '../../components/lecturer/AvailabilityRuleCard';
 import AddRuleSheet from '../../components/lecturer/AddRuleSheet';
 import Button from '../../components/ui/Button';
+import Badge from '../../components/ui/Badge';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 import { Ionicons } from '@expo/vector-icons';
@@ -205,7 +206,7 @@ export default function LecturerSettings() {
                   </Text>
                   <View className="space-y-2">
                     {conflicts.map((c, idx) => (
-                      <View key={idx} className="bg-white p-3 rounded-xl border border-red-150 flex-row justify-between items-center">
+                      <View key={idx} className="bg-white p-3 rounded-xl border border-red-200 flex-row justify-between items-center">
                         <View>
                           <Text className="text-xs font-black text-gray-900">{c.student?.name || 'Student'}</Text>
                           <Text className="text-[9px] text-gray-400 font-bold mt-0.5">
@@ -245,7 +246,7 @@ export default function LecturerSettings() {
               </View>
             </ScrollView>
 
-            <View className="p-6 bg-gray-50 border-t border-gray-150 flex-row gap-3">
+            <View className="p-6 bg-gray-50 border-t border-gray-200 flex-row gap-3">
               <Button
                 label="Discard"
                 onPress={() => setShowPreviewModal(false)}

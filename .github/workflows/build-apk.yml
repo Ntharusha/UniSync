@@ -16,7 +16,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-        - name: Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -32,7 +32,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-        - name: Install Mobile Dependencies
+      - name: Install Mobile Dependencies
         run: |
           cd mobile
           npm install --legacy-peer-deps
@@ -42,7 +42,7 @@ jobs:
           cd mobile
           npx expo prebuild --platform android --no-install
 
-          - name: Set Gradle permissions
+      - name: Set Gradle permissions
         run: chmod +x mobile/android/gradlew
 
       - name: Build Android APK
@@ -50,7 +50,7 @@ jobs:
           cd mobile/android
           ./gradlew assembleDebug --no-daemon
 
-          - name: Upload APK Artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: UniSync-Android-App-Debug

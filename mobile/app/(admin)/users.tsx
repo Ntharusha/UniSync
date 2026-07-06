@@ -69,7 +69,7 @@ export default function UserDirectories() {
                 <View className="flex-row gap-1.5 mt-1.5">
                   <Badge label={item.role} variant={getRoleColor(item.role)} />
                   {item.regNumber ? (
-                    <View className="bg-gray-50 px-2 py-0.5 rounded-full border border-gray-150">
+                    <View className="bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
                       <Text className="text-[9px] font-bold text-gray-500">{item.regNumber}</Text>
                     </View>
                   ) : null}

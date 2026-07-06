@@ -42,7 +42,7 @@ resource "aws_security_group" "unisync_sg" {
 resource "aws_instance" "unisync_backend" {
   ami           = "ami-0c7217cdde317cfec" # Ubuntu 22.04 LTS AMI in us-east-1 (amd64)
   instance_type = "t3.micro"
-  key_name      = "unisync-key" # Make sure to create this key pair in AWS Console
+  key_name      = "unisync" # Make sure to create this key pair in AWS Console
 
   vpc_security_group_ids = [aws_security_group.unisync_sg.id]
 

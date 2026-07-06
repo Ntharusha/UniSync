@@ -42,3 +42,29 @@ function AppInner() {
       };
     }
   }, [user, info, toastError, success]);
+ return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={setUser} />} />
+        <Route path="/signup" element={<Signup onLogin={setUser} />} />
+        <Route path="/" element={
+          user ? <DashboardLayout user={user} onLogout={() => setUser(null)} /> : <Navigate to="/login" />
+        }>
+{user?.role === 'student' && <Route index element={<StudentDashboard user={user!} />} />}
+
+          {user?.role === 'lecturer' && <Route index element={<LecturerDashboard user={user!} />} />}
+          {user?.role === 'admin' && <Route index element={<AdminDashboard user={user!} />} />}
+
+          {/* Appointments route */}
+          <Route
+            path="appointments"
+            element={
+              user?.role === 'student' ? (
+                <StudentRequests user={user!} />
+              ) : user?.role === 'lecturer' ? (
+                <LecturerDashboard user={user!} />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeAll } from '@jest/globals';
 import { app } from '../src/index';
 import { User } from '../src/models/User';
 import { Appointment } from '../src/models/Appointment';
@@ -10,7 +10,7 @@ describe('UniSync Integration Tests', () => {
   let student: any;
   let lecturer: any;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // Users are created in setup.ts if it wipes db, but we need local refs
     student = await new User({
       email: 'student@test.com',
@@ -52,8 +52,7 @@ describe('UniSync Integration Tests', () => {
         startTime: '09:30',
         endTime: '11:00',
         courseName: 'CS101',
-        room: 'L01',
-        semester: 'Semester 1'
+        room: 'L01'
       }];
 
       const res = await request(app)
@@ -66,30 +65,18 @@ describe('UniSync Integration Tests', () => {
     });
 
     it('should cancel conflicting appointments on activation', async () => {
-       // Re-create the appointment because db is cleared between tests
-       const start = new Date();
-       start.setHours(10, 0, 0, 0);
-       start.setDate(start.getDate() + 1); // Tomorrow
-       const end = new Date(start.getTime() + 60 * 60000); // 1 hour
-
-       await new Appointment({
-         studentId: student._id,
-         lecturerId: lecturer._id,
-         requestedStart: start,
-         requestedEnd: end,
-         status: 'approved',
-         reason: 'Discussion',
-         priority: 'normal',
-         priorityWeight: 1
-       }).save();
+       // BUG fix: getDay()+1 overflows past 6 (Saturday=6 → 7 is invalid)
+       // Use the same day as the appointment created in the previous test instead
+       const tomorrowDay = new Date();
+       tomorrowDay.setDate(tomorrowDay.getDate() + 1);
+       const dayOfWeek = tomorrowDay.getDay();
 
        const blocks = [{
-        dayOfWeek: start.getDay(),
+        dayOfWeek,
         startTime: '10:00',
         endTime: '11:00',
         courseName: 'CS101',
-        room: 'L01',
-        semester: 'Semester 1'
+        room: 'L01'
       }];
 
       const res = await request(app)

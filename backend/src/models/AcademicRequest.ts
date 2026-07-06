@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 // Define faculty, department, and degree program options
 const FACULTIES = [
@@ -65,7 +65,8 @@ const DEGREE_PROGRAMS_BY_DEPT: Record<string, string[]> = {
 
 export interface IAcademicRequest {
   _id?: string;
-  studentId: string;
+  // BUG-019 fixed: studentId stored as ObjectId ref to User
+  studentId: mongoose.Types.ObjectId | string;
   faculty: typeof FACULTIES[number];
   department: string;
   degreeProgram: string;
@@ -84,9 +85,11 @@ export interface IAcademicRequest {
   updatedAt?: Date;
 }
 
-const academicRequestSchema = new mongoose.Schema<IAcademicRequest>(
+// Extend Document so pre-validate hooks have typed `this`
+interface IAcademicRequestDoc extends IAcademicRequest, Document {}
+
+const academicRequestSchema = new mongoose.Schema<IAcademicRequestDoc>(
   {
-    // BUG-019 fixed: use ObjectId ref to User instead of plain String
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     faculty: { 
       type: String, 
@@ -95,11 +98,11 @@ const academicRequestSchema = new mongoose.Schema<IAcademicRequest>(
     },
     department: { 
       type: String,
-      // We'll validate this in the controller based on selected faculty
+      // Validated via pre-validate hook against selected faculty
     },
     degreeProgram: { 
       type: String,
-      // We'll validate this in the controller based on selected department
+      // Validated via pre-validate hook against selected department
     },
     requestType: {
       type: String,
@@ -130,8 +133,8 @@ const academicRequestSchema = new mongoose.Schema<IAcademicRequest>(
   { timestamps: true }
 );
 
-// Add custom validation for department based on faculty
-academicRequestSchema.pre('validate', function(next) {
+// Validate department against selected faculty
+academicRequestSchema.pre<IAcademicRequestDoc>('validate', function(next) {
   const faculty = this.faculty;
   const department = this.department;
   
@@ -144,8 +147,8 @@ academicRequestSchema.pre('validate', function(next) {
   next();
 });
 
-// Add custom validation for degreeProgram based on department
-academicRequestSchema.pre('validate', function(next) {
+// Validate degreeProgram against selected department
+academicRequestSchema.pre<IAcademicRequestDoc>('validate', function(next) {
   const department = this.department;
   const degreeProgram = this.degreeProgram;
   
@@ -158,7 +161,7 @@ academicRequestSchema.pre('validate', function(next) {
   next();
 });
 
-export const AcademicRequest = mongoose.model<IAcademicRequest>(
+export const AcademicRequest = mongoose.model<IAcademicRequestDoc>(
   'AcademicRequest',
   academicRequestSchema
 );

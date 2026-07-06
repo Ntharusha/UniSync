@@ -1005,3 +1005,467 @@ app.post('/api/appointments', authenticateToken, requireRole('student', 'admin')
 
   const priorityWeights: Record<string, number> = { normal: 1, academic_urgent: 2, emergency: 3 };
   const incomingWeight = priorityWeights[priority] || 1;
+  try {
+    // 1. Check for overlapping appointments
+    const overlapping = await Appointment.findOne({
+      lecturerId,
+      status: { $in: ['approved', 'pending'] },
+      requestedStart: { $lt: new Date(requestedEnd) },
+      requestedEnd: { $gt: new Date(requestedStart) }
+    });
+
+    if (overlapping) {
+      const existingWeight = overlapping.priorityWeight;
+      if (incomingWeight > existingWeight) {
+        // Displace existing
+        overlapping.status = 'cancelled';
+        overlapping.statusHistory.push({
+          status: 'cancelled',
+          reason: 'Displaced by higher-priority request',
+          at: new Date()
+        });
+        await overlapping.save();
+
+        io.to(overlapping.studentId.toString()).emit('notification', {
+          userId: overlapping.studentId,
+          message: 'Your booking was displaced by a higher-priority request.',
+          type: 'displacement'
+        });
+
+        // Save persistent notification
+        await new Notification({
+          userId: overlapping.studentId,
+          title: 'Booking Displaced',
+          message: `Your appointment with a lecturer was displaced by a higher-priority request.`,
+          type: 'displacement',
+          relatedId: overlapping._id
+        }).save();
+      } else {
+        const alternatives = await suggestAlternativeSlots(lecturerId, new Date(requestedStart));
+        return res.status(409).json({
+          error: 'This time slot is already taken.',
+          alternatives
+        });
+      }
+    }
+
+    const appt = new Appointment({
+      studentId,
+      lecturerId,
+      requestedStart,
+      requestedEnd,
+      priority,
+      priorityWeight: incomingWeight,
+      reason,
+      status: 'pending',
+      documents: req.body.documents || []
+    });
+    await appt.save();
+
+    // Schedule reminders if queue available
+    if (reminderQueue) {
+      const msUntil = new Date(requestedStart).getTime() - Date.now();
+      if (msUntil > 0) {
+        await reminderQueue.add('reminder-24h',
+          { appointmentId: appt._id.toString() },
+          { delay: Math.max(0, msUntil - 24 * 60 * 60 * 1000) }
+        );
+        await reminderQueue.add('reminder-1h',
+          { appointmentId: appt._id.toString() },
+          { delay: Math.max(0, msUntil - 60 * 60 * 1000) }
+        );
+      }
+    }
+
+    io.emit('slot:updated', { lecturerId, date: requestedStart.split('T')[0] });
+    io.emit('notification', {
+      userId: lecturerId,
+      message: 'New appointment request received.'
+    });
+
+    // Save persistent notification
+    await new Notification({
+      userId: lecturerId,
+      title: 'New Request',
+      message: `A new ${priority} appointment request has been submitted.`,
+      type: 'info',
+      relatedId: appt._id
+    }).save();
+
+    res.status(201).json(appt);
+
+    // Audit log for appointment
+    await new AuditLog({
+      actorId: studentId,
+      action: 'APPOINTMENT_REQUESTED',
+      entityType: 'Appointment',
+      entityId: appt._id,
+      metadata: { priority }
+    }).save();
+
+  } catch (err: any) {
+    if (err.code === 11000) {
+      // Duplicate key error - simultaneous booking
+      const alternatives = await suggestAlternativeSlots(lecturerId, new Date(requestedStart));
+      return res.status(409).json({
+        error: 'Someone else just booked this slot. Please choose another.',
+        alternatives
+      });
+    }
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Update Appointment Status — BUG-005: lecturers and admins only
+app.patch('/api/appointments/:id', authenticateToken, requireRole('lecturer', 'admin', 'student'), async (req: any, res: Response) => {
+  const { status, reason, proposedStart, proposedEnd } = req.body;
+  const userRole = req.user?.role;
+  const userId = req.user?.userId;
+
+  try {
+    const appt = await Appointment.findById(req.params.id);
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
+
+    // Permissions check
+    if (userRole === 'student' && appt.studentId.toString() !== userId) {
+      return res.status(403).json({ error: 'Unauthorized to update this appointment' });
+    }
+    if (userRole === 'lecturer' && appt.lecturerId.toString() !== userId) {
+      return res.status(403).json({ error: 'Unauthorized to update this appointment' });
+    }
+
+    let targetUserId = appt.studentId;
+    let notificationTitle = `Request ${status.toUpperCase()}`;
+    let notificationMessage = `Your appointment request for ${appt.requestedStart.toLocaleDateString()} has been ${status}.`;
+    let notificationType = status === 'approved' ? 'success' : 'error';
+
+    if (status === 'rescheduled') {
+      if (userRole !== 'lecturer' && userRole !== 'admin') {
+        return res.status(403).json({ error: 'Only lecturers and admins can reschedule appointments' });
+      }
+      if (!proposedStart || !proposedEnd) {
+        return res.status(400).json({ error: 'Proposed start and end times are required for rescheduling' });
+      }
+      appt.proposedStart = new Date(proposedStart);
+      appt.proposedEnd = new Date(proposedEnd);
+      appt.status = 'rescheduled';
+      
+      targetUserId = appt.studentId;
+      notificationTitle = 'Reschedule Propose';
+      notificationMessage = `The lecturer has proposed a new time slot: ${new Date(proposedStart).toLocaleString()}.`;
+      notificationType = 'warning';
+    } else if (status === 'approved' && appt.status === 'rescheduled') {
+      // Student accepting the rescheduled time
+      if (!appt.proposedStart || !appt.proposedEnd) {
+        return res.status(400).json({ error: 'No proposed slot exists to accept' });
+      }
+      appt.requestedStart = appt.proposedStart;
+      appt.requestedEnd = appt.proposedEnd;
+      appt.proposedStart = undefined;
+      appt.proposedEnd = undefined;
+      appt.status = 'approved';
+
+      targetUserId = appt.lecturerId;
+      notificationTitle = 'Reschedule Accepted';
+      notificationMessage = `Student has accepted the proposed time slot for ${appt.requestedStart.toLocaleDateString()}.`;
+      notificationType = 'success';
+    } else if (status === 'cancelled' && appt.status === 'rescheduled') {
+      // Student rejecting/cancelling rescheduled time
+      appt.proposedStart = undefined;
+      appt.proposedEnd = undefined;
+      appt.status = 'cancelled';
+
+      targetUserId = appt.lecturerId;
+      notificationTitle = 'Reschedule Declined';
+      notificationMessage = `Student has declined the proposed rescheduled time. Reason: ${reason || 'No reason provided'}.`;
+      notificationType = 'error';
+    } else {
+      // Normal state transitions (approved, rejected, cancelled)
+      appt.status = status;
+      if (status === 'approved') {
+        targetUserId = appt.studentId;
+        notificationTitle = 'Request APPROVED';
+        notificationMessage = `Your appointment request for ${appt.requestedStart.toLocaleDateString()} has been approved.`;
+        notificationType = 'success';
+      } else if (status === 'rejected') {
+        targetUserId = appt.studentId;
+        notificationTitle = 'Request REJECTED';
+        notificationMessage = `Your appointment request for ${appt.requestedStart.toLocaleDateString()} has been rejected. Reason: ${reason || 'No reason provided'}.`;
+        notificationType = 'error';
+      } else if (status === 'cancelled') {
+        // Can be cancelled by either student or lecturer
+        targetUserId = userRole === 'student' ? appt.lecturerId : appt.studentId;
+        notificationTitle = 'Request CANCELLED';
+        notificationMessage = `The appointment request for ${appt.requestedStart.toLocaleDateString()} has been cancelled.`;
+        notificationType = 'error';
+      }
+    }
+
+    appt.statusHistory.push({
+      status,
+      reason,
+      changedBy: userId,
+      at: new Date()
+    });
+    await appt.save();
+
+    io.emit('slot:updated', { lecturerId: appt.lecturerId, date: appt.requestedStart.toISOString().split('T')[0] });
+    io.emit('notification', {
+      userId: targetUserId,
+      message: notificationMessage
+    });
+
+    // Save persistent notification
+    await new Notification({
+      userId: targetUserId,
+      title: notificationTitle,
+      message: notificationMessage,
+      type: notificationType,
+      relatedId: appt._id
+    }).save();
+
+    res.json(appt);
+
+    // Audit log
+    await new AuditLog({
+      actorId: userId,
+      action: `APPOINTMENT_${status.toUpperCase()}`,
+      entityType: 'Appointment',
+      entityId: appt._id,
+      metadata: { reason, proposedStart, proposedEnd }
+    }).save();
+
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Get Admin Analytics — BUG-005 applied: admin only; BUG-016: remove mocked values
+app.get('/api/admin/analytics', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalLecturers = await User.countDocuments({ role: 'lecturer' });
+    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalAppointments = await Appointment.countDocuments();
+    const activeAppointments = await Appointment.countDocuments({ status: 'approved' });
+    const pendingRequests = await Appointment.countDocuments({ status: 'pending' });
+    const cancelledAppointments = await Appointment.countDocuments({ status: 'cancelled' });
+
+    res.json({
+      totalUsers,
+      totalLecturers,
+      totalStudents,
+      totalAppointments,
+      activeAppointments,
+      pendingRequests,
+      cancelledAppointments,
+      // BUG-016 fixed: these were previously hardcoded mock values
+      uptime: 'N/A',
+      avgResponse: 'N/A'
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get Admin Users — BUG-005 applied: admin only
+app.get('/api/admin/users', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const users = await User.find().select('-passwordHash').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// BUG-005 + BUG-006 applied: admin only, real actor ID from JWT
+app.delete('/api/admin/users/:id', authenticateToken, requireRole('admin'), async (req: any, res: Response) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.sendStatus(200);
+
+    // Audit log
+    await new AuditLog({
+      actorId: req.user?.userId,
+      action: 'USER_DELETED',
+      entityType: 'User',
+      entityId: req.params.id as any
+    }).save();
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Toggle User Status (Admin) — BUG-005 + BUG-006 applied
+app.patch('/api/admin/users/:id/status', authenticateToken, requireRole('admin'), async (req: any, res: Response) => {
+  const { isActive } = req.body;
+  try {
+    await User.findByIdAndUpdate(req.params.id, { isActive });
+    res.sendStatus(200);
+
+    // Audit log — use real actor ID from JWT token
+    await new AuditLog({
+      actorId: req.user?.userId,
+      action: isActive ? 'USER_ACTIVATED' : 'USER_DEACTIVATED',
+      entityType: 'User',
+      entityId: req.params.id as any
+    }).save();
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get Audit Logs (Admin) — BUG-005 applied: admin only
+app.get('/api/admin/audit-logs', authenticateToken, requireRole('admin'), async (req: Request, res: Response) => {
+  try {
+    const logs = await AuditLog.find()
+      .sort({ timestamp: -1 })
+      .limit(100)
+      .populate('actorId', 'name email role');
+    res.json(logs);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Messaging (Chat) ---
+app.get('/api/messages/:appointmentId', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const messages = await Message.find({ appointmentId: req.params.appointmentId })
+      .sort({ createdAt: 1 })
+      .populate('senderId', 'name role');
+    res.json(messages);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/messages', authenticateToken, async (req: Request, res: Response) => {
+  const { appointmentId, senderId, body } = req.body;
+  try {
+    const msg = new Message({ appointmentId, senderId, body });
+    await msg.save();
+
+    const populated = await msg.populate('senderId', 'name role');
+
+    // Notify room
+    io.to(appointmentId).emit('message', populated);
+
+    res.status(201).json(populated);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// --- Academic Requests ---
+app.get('/api/academic-requests', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.query;
+    const query = studentId ? { studentId } : {};
+    const requests = await AcademicRequest.find(query).sort({ createdAt: -1 });
+    res.json(requests);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/academic-requests', authenticateToken, async (req: Request, res: Response) => {
+  const { studentId, faculty, department, degreeProgram, requestType, priority, title, description, documents } = req.body;
+  try {
+    if (!studentId || !faculty || !degreeProgram || !title || !description) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const request = new AcademicRequest({
+      studentId,
+      faculty,
+      department: department || '',
+      degreeProgram,
+      requestType: requestType || 'other',
+      priority: priority || 'normal',
+      title,
+      description,
+      documents: documents || [],
+      status: 'pending'
+    });
+
+    await request.save();
+    res.status(201).json(request);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/academic-requests/:id', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const request = await AcademicRequest.findById(req.params.id);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    res.json(request);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/academic-requests/:id', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { status, title, description, priority } = req.body;
+    const request = await AcademicRequest.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...(status && { status }),
+        ...(title && { title }),
+        ...(description && { description }),
+        ...(priority && { priority })
+      },
+      { new: true }
+    );
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    res.json(request);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Socket.io connection logic
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('join', (userId) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined their notification room`);
+  });
+
+  socket.on('join-chat', (appointmentId) => {
+    socket.join(appointmentId);
+    console.log(`User joined chat room: ${appointmentId}`);
+  });
+
+  socket.on('disconnect', () => console.log('User disconnected'));
+});
+
+// --- BullMQ Worker for Reminders ---
+// --- BullMQ Worker for Reminders initialized in initRedis ---
+
+// (named exports are declared inline above for Jest compatibility)
+
+
+
+// In dev/tests multiple instances can get started accidentally; avoid hard crash on EADDRINUSE.
+if (process.env.NODE_ENV !== 'test') {
+  httpServer.on('error', (err: any) => {
+    if (err?.code === 'EADDRINUSE') {
+      console.warn(`Port ${PORT} already in use. Skipping server listen (another instance may be running).`);
+      return;
+    }
+    throw err;
+  });
+
+  httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+

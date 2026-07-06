@@ -28,4 +28,39 @@ export default function DashboardLayout({ user, onLogout }: { user: UserType, on
     return () => clearInterval(interval);
   }, [user._id]);
 
-  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    onLogout();
+    navigate('/login');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-vau-maroon text-white flex flex-col shadow-2xl">
+        <div className="p-6 flex items-center gap-3">
+          <div className="bg-vau-gold p-2 rounded-lg">
+            <Calendar className="text-vau-maroon h-6 w-6" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">UniSync</h1>
+        </div>
+
+        <nav className="flex-1 px-4 py-6 space-y-2">
+          <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" />
+          {/* Appointments are shown on the role dashboards themselves; keep sidebar clean */}
+
+          <NavItem icon={<Bell size={20} />} label="Notifications" to="/notifications" />
+          <NavItem icon={<User size={20} />} label="Profile" to="/profile" />
+        </nav>
+
+        <div className="p-4 border-t border-vau-maroon-light">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-100 hover:bg-vau-maroon-dark rounded-xl transition-colors"
+          >
+            <LogOut size={20} />
+            <span className="font-medium">Sign Out</span>
+          </button>
+        </div>
+      </aside>

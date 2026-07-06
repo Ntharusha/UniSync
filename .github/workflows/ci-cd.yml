@@ -27,3 +27,13 @@ jobs:
 
       - name: Install Root Dependencies
         run: npm ci
+
+        # Append this to the 'validate' job steps
+      - name: Install Backend Dependencies
+        run: npm ci --prefix backend
+
+      - name: Run Backend Tests
+        run: npm test --prefix backend
+        env:
+          JWT_SECRET: "test-secret"
+          PORT: 3001

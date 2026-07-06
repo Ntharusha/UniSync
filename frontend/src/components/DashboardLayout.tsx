@@ -99,3 +99,34 @@ export default function DashboardLayout({ user, onLogout }: { user: UserType, on
             </div>
           </div>
         </header>
+
+               {/* Content Area */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Outlet />
+          </motion.div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+
+
+function NavItem({ icon, label, to }: { icon: React.ReactNode, label: string, to: string }) {
+  const location = useLocation();
+  const active = location.pathname === to || (to === '/' && location.pathname === '');
+  
+  return (
+    <Link to={to} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+      active ? 'bg-white/10 text-vau-gold font-semibold shadow-inner' : 'text-white/70 hover:bg-white/5 hover:text-white'
+    }`}>
+      {icon}
+      <span>{label}</span>
+    </Link>
+  );
+}

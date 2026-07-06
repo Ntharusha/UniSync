@@ -121,3 +121,24 @@ messages.map((msg) => {
         )}
       </div>
 
+      {/* Input */}
+      <form onSubmit={sendMessage} className="p-4 bg-white border-t border-gray-100 flex gap-2">
+        <input 
+          type="text" 
+          value={body}
+          onChange={e => setBody(e.target.value)}
+          placeholder="Type a message..."
+          className="flex-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-vau-maroon/20 text-sm font-medium"
+        />
+        <button 
+          type="submit"
+          className="p-3 bg-vau-maroon text-vau-gold rounded-xl hover:scale-110 active:scale-95 transition-all shadow-lg"
+        >
+          <Send size={20} />
+        </button>
+      </form>
+    </motion.div>
+  );
+}
+
+

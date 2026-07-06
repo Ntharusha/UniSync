@@ -100,4 +100,24 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
              <MessageSquare size={40} className="mb-2" />
              <p className="text-sm font-medium">No messages yet. Send a message to start the discussion.</p>
           </div>
-        ) :
+        ) :(
+messages.map((msg) => {
+            const isMe = typeof msg.senderId === 'string' ? msg.senderId === currentUser._id : msg.senderId._id === currentUser._id;
+            const senderName = typeof msg.senderId === 'string' ? 'User' : msg.senderId.name;
+            
+            return (
+              <div key={msg._id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium shadow-sm ${
+                  isMe ? 'bg-vau-maroon text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
+                }`}>
+                  {msg.body}
+                </div>
+                <span className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-wider px-1">
+                  {isMe ? 'You' : senderName} • {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            );
+          })
+        )}
+      </div>
+

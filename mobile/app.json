@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Uni Sync",
+    "slug": "unisync-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#8B1A3B"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "lk.ac.vau.unisync",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Upload timetable images for OCR parsing.",
+        "NSPhotoLibraryUsageDescription": "Select supporting documents for appointment requests.",
+        "NSMicrophoneUsageDescription": "Not used."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#8B1A3B"
+      },
+      "package": "lk.ac.vau.unisync",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#8B1A3B",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+    ],
+    "scheme": "unisync",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

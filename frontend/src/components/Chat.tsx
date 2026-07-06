@@ -66,3 +66,38 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
       console.error(err);
     }
   };
+   return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-3xl shadow-2xl border border-gray-100 flex flex-col z-50 overflow-hidden"
+    >
+      {/* Header */}
+      <div className="p-5 bg-vau-maroon text-white flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-white/20 rounded-xl">
+            <MessageSquare size={20} />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm">Appointment Discussion</h3>
+            <p className="text-[10px] opacity-80 font-medium">Real-time messaging active</p>
+          </div>
+        </div>
+        <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Messages */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+        {loading ? (
+          <div className="h-full flex items-center justify-center">
+             <div className="animate-spin rounded-full h-8 w-8 border-2 border-vau-maroon border-t-transparent"></div>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-50 text-center p-8">
+             <MessageSquare size={40} className="mb-2" />
+             <p className="text-sm font-medium">No messages yet. Send a message to start the discussion.</p>
+          </div>
+        ) :

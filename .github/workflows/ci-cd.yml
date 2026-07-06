@@ -49,7 +49,7 @@ jobs:
   deploy-backend:
     name: Deploy Backend to EC2
     needs: validate
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
@@ -61,8 +61,19 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            if [ ! -d "/home/ubuntu/UniSync" ]; then
+              git clone https://github.com/Ntharusha/UniSync.git /home/ubuntu/UniSync
+            fi
             cd /home/ubuntu/UniSync
-            git pull origin main
+            git fetch origin
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+            
+            # Create production .env file
+            echo "PORT=3001" > backend/.env
+            echo "NODE_ENV=production" >> backend/.env
+            echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> backend/.env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
             
             # Restart backend
             npm install --prefix backend

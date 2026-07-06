@@ -877,7 +877,10 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
     for (const conflict of conflicts) {
       // Support multiple conflict shapes (tests vs runtime)
       const appointmentId = conflict._id ?? conflict.appointmentId;
-      const studentId = conflict.studentId ?? conflict.student?._id ?? conflict.student;
+      const rawStudent = conflict.studentId ?? conflict.student;
+      const studentId = (rawStudent && typeof rawStudent === 'object' && '_id' in rawStudent)
+        ? rawStudent._id
+        : rawStudent;
 
       await Appointment.findByIdAndUpdate(appointmentId, {
         status: 'cancelled',
@@ -922,7 +925,8 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
     }).save();
 
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('ACTIVATE TIMETABLE ERROR:', err);
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 });
 

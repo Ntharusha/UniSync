@@ -112,10 +112,10 @@ export default function Appointments() {
       {/* Decline Reason Modal/Overlay */}
       {decliningApptId && (
         <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: 16 }}>
-          <View className="bg-white w-full rounded-3xl p-6 border border-gray-100 shadow-xl space-y-4">
+          <View className="bg-white w-full rounded-3xl p-6 border border-gray-100 shadow-xl gap-4">
             <Text className="text-base font-black text-gray-900">Decline Rescheduled Slot</Text>
             
-            <View className="space-y-1">
+            <View className="gap-1">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Reason for declining (Required)</Text>
               <TextInput 
                 value={declineReason}

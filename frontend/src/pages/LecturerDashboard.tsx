@@ -528,7 +528,7 @@ export default function LecturerDashboard({ user }: { user: UserType }) {
                   </div>
                 </div>
 
-                 {/* Add Rule Form */}
+                {/* Add Rule Form */}
                 <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 space-y-4">
                   <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
                     <Plus size={18} className="text-vau-maroon" /> Add New Rule
@@ -968,4 +968,3 @@ function AppointmentCard({ appt, onApprove, onReject, onReschedule, onChat, acti
     </motion.div>
   );
 }
-

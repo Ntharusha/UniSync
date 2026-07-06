@@ -7,7 +7,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs'; 
+import fs from 'fs';
 import { User } from './models/User';
 import { Appointment } from './models/Appointment';
 import { TimetableBlock } from './models/TimetableBlock';
@@ -27,6 +27,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Queue, Worker } from 'bullmq';
 import Redis from 'ioredis';
+
 dotenv.config();
 
 export const app: Express = express();
@@ -34,15 +35,29 @@ export const app: Express = express();
 // Exported for tests (Jest/Supertest)
 // Note: this must be declared before any route handlers.
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:5173',
+  'http://localhost:8082'
+];
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  // BUG-011 fixed: restrict WebSocket CORS to known frontend origin
-  cors: { origin: process.env.FRONTEND_URL || 'http://localhost:5173' }
+  cors: {
+    origin: allowedOrigins,
+    credentials: true
+  }
 });
 
-
-// BUG-023 fixed: restrict Express CORS to known frontend origin
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 // BUG-012 fixed: add body size limit to prevent DoS
 app.use(express.json({ limit: '1mb' }));
 app.use('/uploads', express.static('uploads'));
@@ -81,6 +96,7 @@ const initRedis = async () => {
       tempRedis.connect(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Redis connect timeout')), timeoutMs))
     ]);
+
     await tempRedis.ping();
     redis = tempRedis;
 
@@ -176,6 +192,7 @@ const upload = multer({
     cb(null, true);
   }
 });
+
 app.post('/api/upload', authenticateToken, upload.single('file'), (req: any, res: Response) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   res.json({
@@ -693,7 +710,6 @@ app.post('/api/timetable/parse', authenticateToken, upload.single('file'), async
           }
         }
 
-
         // Try to find time patterns like HH:MM or HH.MM
         const timeMatch = line.match(/(\d{1,2}[:.]\d{2})/g);
         let startTime = '';
@@ -877,10 +893,7 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
     for (const conflict of conflicts) {
       // Support multiple conflict shapes (tests vs runtime)
       const appointmentId = conflict._id ?? conflict.appointmentId;
-      const rawStudent = conflict.studentId ?? conflict.student;
-      const studentId = (rawStudent && typeof rawStudent === 'object' && '_id' in rawStudent)
-        ? rawStudent._id
-        : rawStudent;
+      const studentId = conflict.studentId ?? conflict.student?._id ?? conflict.student;
 
       await Appointment.findByIdAndUpdate(appointmentId, {
         status: 'cancelled',
@@ -925,8 +938,7 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
     }).save();
 
   } catch (err: any) {
-    console.error('ACTIVATE TIMETABLE ERROR:', err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -1009,6 +1021,7 @@ app.post('/api/appointments', authenticateToken, requireRole('student', 'admin')
 
   const priorityWeights: Record<string, number> = { normal: 1, academic_urgent: 2, emergency: 3 };
   const incomingWeight = priorityWeights[priority] || 1;
+
   try {
     // 1. Check for overlapping appointments
     const overlapping = await Appointment.findOne({
@@ -1472,4 +1485,3 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`Server running on port ${PORT}`);
   });
 }
-

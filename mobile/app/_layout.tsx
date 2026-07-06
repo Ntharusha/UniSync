@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { queryClient } from '../lib/queryClient';
 import { useAuth } from '../hooks/useAuth';
 import Toast from '../components/ui/Toast';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Platform } from 'react-native';
 import { colors } from '../constants/theme';
 import '../global.css';
 
@@ -47,6 +47,35 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AppResponsiveContainer({ children }: { children: React.ReactNode }) {
+  if (Platform.OS === 'web') {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#f3f4f6', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{
+          width: '100%',
+          maxWidth: 480,
+          height: '100%',
+          maxHeight: 900,
+          backgroundColor: '#ffffff',
+          overflow: 'hidden',
+          borderColor: '#e5e7eb',
+          borderWidth: 1,
+          ...Platform.select({
+            web: {
+              boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+              borderRadius: '24px',
+            } as any,
+            default: {},
+          }),
+        }}>
+          {children}
+        </View>
+      </View>
+    );
+  }
+  return <>{children}</>;
+}
+
 export default function RootLayout() {
   const { restoreSession } = useAuth();
 
@@ -58,19 +87,21 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthGuard>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(student)" options={{ headerShown: false }} />
-              <Stack.Screen name="(lecturer)" options={{ headerShown: false }} />
-              <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-              <Stack.Screen name="chat/[appointmentId]" options={{ presentation: 'modal', headerShown: true, title: 'Chat' }} />
-              <Stack.Screen name="notifications" options={{ presentation: 'modal', headerShown: true, title: 'Notifications' }} />
-              <Stack.Screen name="profile" options={{ presentation: 'modal', headerShown: true, title: 'Profile Settings' }} />
-            </Stack>
-            <Toast />
-            <StatusBar style="dark" />
-          </AuthGuard>
+          <AppResponsiveContainer>
+            <AuthGuard>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(student)" options={{ headerShown: false }} />
+                <Stack.Screen name="(lecturer)" options={{ headerShown: false }} />
+                <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+                <Stack.Screen name="chat/[appointmentId]" options={{ presentation: 'modal', headerShown: true, title: 'Chat' }} />
+                <Stack.Screen name="notifications" options={{ presentation: 'modal', headerShown: true, title: 'Notifications' }} />
+                <Stack.Screen name="profile" options={{ presentation: 'modal', headerShown: true, title: 'Profile Settings' }} />
+              </Stack>
+              <Toast />
+              <StatusBar style="dark" />
+            </AuthGuard>
+          </AppResponsiveContainer>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

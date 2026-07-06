@@ -101,7 +101,7 @@ export default function AppointmentCard({
 
       {/* Student Details (Visible to lecturers) */}
       {role === 'lecturer' && opponent?.regNumber ? (
-        <View className="p-3 bg-gray-50 rounded-2xl border border-gray-100 mb-3 space-y-1">
+        <View className="p-3 bg-gray-50 rounded-2xl border border-gray-100 mb-3 gap-1">
           <View className="flex-row">
             <Text className="text-[9px] font-black text-gray-400 uppercase w-12">ID:</Text>
             <Text className="text-[11px] font-semibold text-gray-900">{opponent.regNumber}</Text>
@@ -124,7 +124,7 @@ export default function AppointmentCard({
       {/* Appointment Details / Content */}
       <View className="p-3 bg-gray-50 rounded-2xl border border-gray-100">
         {parsed.isAcademic ? (
-          <View className="space-y-1">
+          <View className="gap-1">
             <View className="flex-row items-center gap-1.5 mb-1">
               <View className="bg-vau-maroon px-1.5 py-0.5 rounded">
                 <Text className="text-[8px] font-black text-white uppercase">
@@ -144,7 +144,7 @@ export default function AppointmentCard({
             ) : null}
           </View>
         ) : (
-          <View className="space-y-1">
+          <View className="gap-1">
             <Text className="text-[9px] text-gray-400 font-bold uppercase">General Meeting</Text>
             <Text className="text-xs text-gray-700 font-medium leading-relaxed">
               {parsed.description || 'No description provided.'}
@@ -179,7 +179,7 @@ export default function AppointmentCard({
 
       {/* Proposed Rescheduled Slot Display */}
       {(appt.status === 'rescheduled' || appt.proposedStart) && appt.proposedStart ? (
-        <View className="mt-3 p-3 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 space-y-1">
+        <View className="mt-3 p-3 bg-indigo-50/50 rounded-2xl border border-indigo-100/50 gap-1">
           <Text className="text-[9px] font-black text-indigo-800 uppercase tracking-widest block">
             Proposed Time Slot:
           </Text>

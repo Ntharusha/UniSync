@@ -395,7 +395,7 @@ export default function AdminDashboard({ user }: { user: UserType }) {
               <form onSubmit={handleCreateUser} className="p-10 space-y-6">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-2xl font-black text-gray-900">Add New User</h3>
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X size={24} /></button>
+                  <button type="button" onClick={() => setShowCreateModal(false)} className="p-2 hover:bg-gray-150 rounded-full transition-colors"><X size={24} /></button>
                 </div>
 
                 <div className="space-y-4">

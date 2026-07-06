@@ -38,7 +38,7 @@ export default function AddRuleSheet({ visible, onClose, onAdd }: AddRuleSheetPr
     onSelect: (val: T) => void
   ) => {
     return (
-      <View className="space-y-1.5">
+      <View className="gap-1.5">
         <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
           {label}
         </Text>
@@ -81,7 +81,7 @@ export default function AddRuleSheet({ visible, onClose, onAdd }: AddRuleSheetPr
 
   return (
     <BottomSheet visible={visible} onClose={onClose} title="Add Rule">
-      <View className="space-y-6">
+      <View className="gap-6">
         {/* Type Selector */}
         {renderSelectGroup(
           'Rule Type',
@@ -103,7 +103,7 @@ export default function AddRuleSheet({ visible, onClose, onAdd }: AddRuleSheetPr
         )}
 
         {/* Start Time Selector */}
-        <View className="space-y-1.5">
+        <View className="gap-1.5">
           <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
             Start Time
           </Text>
@@ -136,7 +136,7 @@ export default function AddRuleSheet({ visible, onClose, onAdd }: AddRuleSheetPr
         </View>
 
         {/* End Time Selector */}
-        <View className="space-y-1.5">
+        <View className="gap-1.5">
           <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
             End Time
           </Text>

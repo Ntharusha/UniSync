@@ -1,9 +1,37 @@
 @import "tailwindcss";
 
+/* Force class-based dark mode — prevents OS/browser dark mode from auto-dimming the app */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-vau-maroon: #8B1A3B;
-  --color-vau-maroon-light: #A8294E;
-  --color-vau-maroon-dark: #6B1230;
-  --color-vau-gold: #D4A017;
-  --color-vau-gold-light: #E8B520;
+  --color-vau-maroon: #800000;
+  --color-vau-gold: #FFD700;
+  --color-vau-maroon-light: #990000;
+  --color-vau-maroon-dark: #660000;
+
+  --font-inter: "Inter", sans-serif;
+}
+
+/* Lock the app to light mode always */
+html {
+  color-scheme: light;
+  background-color: #f9fafb;
+}
+
+:root {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f9fafb;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  border-color: var(--color-gray-200);
 }

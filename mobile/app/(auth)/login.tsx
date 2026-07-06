@@ -60,8 +60,8 @@ export default function Login() {
           </View>
 
           {/* Form */}
-            <View className="space-y-4">
-              <View className="space-y-1.5">
+            <View className="gap-4">
+              <View className="gap-1.5">
                 <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                   Email or Registration Number
                 </Text>
@@ -93,7 +93,7 @@ export default function Login() {
                 ) : null}
               </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Password
               </Text>

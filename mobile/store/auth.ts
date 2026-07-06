@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
+import { setSecureItem, getSecureItem, deleteSecureItem } from '../lib/secureStore';
 import { User } from '../types';
 import { connectSocket, disconnectSocket } from '../lib/socket';
 
@@ -19,28 +19,28 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   login: async (user, token) => {
-    await SecureStore.setItemAsync('jwt_token', token);
-    await SecureStore.setItemAsync('user_data', JSON.stringify(user));
+    await setSecureItem('jwt_token', token);
+    await setSecureItem('user_data', JSON.stringify(user));
     set({ user, token, isLoading: false });
     connectSocket(user._id);
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync('jwt_token');
-    await SecureStore.deleteItemAsync('user_data');
+    await deleteSecureItem('jwt_token');
+    await deleteSecureItem('user_data');
     disconnectSocket();
     set({ user: null, token: null, isLoading: false });
   },
 
   updateUser: async (user) => {
-    await SecureStore.setItemAsync('user_data', JSON.stringify(user));
+    await setSecureItem('user_data', JSON.stringify(user));
     set({ user });
   },
 
   restoreSession: async () => {
     try {
-      const token = await SecureStore.getItemAsync('jwt_token');
-      const userDataStr = await SecureStore.getItemAsync('user_data');
+      const token = await getSecureItem('jwt_token');
+      const userDataStr = await getSecureItem('user_data');
       if (token && userDataStr) {
         const user = JSON.parse(userDataStr) as User;
         set({ user, token, isLoading: false });

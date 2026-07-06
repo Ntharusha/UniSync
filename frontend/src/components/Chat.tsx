@@ -66,7 +66,8 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
       console.error(err);
     }
   };
-   return (
+
+  return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -100,8 +101,8 @@ export default function Chat({ appointmentId, currentUser, onClose }: ChatProps)
              <MessageSquare size={40} className="mb-2" />
              <p className="text-sm font-medium">No messages yet. Send a message to start the discussion.</p>
           </div>
-        ) :(
-messages.map((msg) => {
+        ) : (
+          messages.map((msg) => {
             const isMe = typeof msg.senderId === 'string' ? msg.senderId === currentUser._id : msg.senderId._id === currentUser._id;
             const senderName = typeof msg.senderId === 'string' ? 'User' : msg.senderId.name;
             
@@ -140,5 +141,3 @@ messages.map((msg) => {
     </motion.div>
   );
 }
-
-

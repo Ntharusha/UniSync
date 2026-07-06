@@ -137,7 +137,7 @@ export default function LecturerSettings() {
       </View>
 
       {/* Rules list */}
-      <View className="space-y-2 mb-6">
+      <View className="gap-2 mb-6">
         {rules.length === 0 ? (
           <View className="bg-white p-8 rounded-3xl border border-gray-100 items-center justify-center">
             <Text className="text-xs text-gray-400 font-bold italic">No active availability rules.</Text>
@@ -154,7 +154,7 @@ export default function LecturerSettings() {
       </View>
 
       {/* Timetable Upload options */}
-      <View className="bg-white p-5 rounded-3xl border border-gray-100 space-y-4 mb-10 shadow-sm">
+      <View className="bg-white p-5 rounded-3xl border border-gray-100 gap-4 mb-10 shadow-sm">
         <Text className="text-xs font-black text-gray-400 uppercase tracking-widest">
           Sync Weekly Timetable
         </Text>
@@ -203,7 +203,7 @@ export default function LecturerSettings() {
                   <Text className="text-xs text-red-650 leading-relaxed mb-3 font-semibold">
                     Activating this timetable will automatically cancel the following conflicting appointments:
                   </Text>
-                  <View className="space-y-2">
+                  <View className="gap-2">
                     {conflicts.map((c, idx) => (
                       <View key={idx} className="bg-white p-3 rounded-xl border border-red-150 flex-row justify-between items-center">
                         <View>

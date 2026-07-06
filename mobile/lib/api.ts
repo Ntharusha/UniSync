@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { getSecureItem, deleteSecureItem } from './secureStore';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001';
 
@@ -14,7 +14,7 @@ export const api = axios.create({
 // ── Request interceptor: attach JWT token ────────────────────────────────────
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = await SecureStore.getItemAsync('jwt_token');
+    const token = await getSecureItem('jwt_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +29,8 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Clear stored token — the root layout will redirect to login
-      await SecureStore.deleteItemAsync('jwt_token');
-      await SecureStore.deleteItemAsync('user_data');
+      await deleteSecureItem('jwt_token');
+      await deleteSecureItem('user_data');
     }
     return Promise.reject(error);
   }

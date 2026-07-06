@@ -93,7 +93,7 @@ export default function Signup({ onLogin }: { onLogin: (user: UserType) => void 
               </motion.div>
             )}
 
-<div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
                 className={`py-3 px-4 text-sm font-bold rounded-2xl transition-all ${
@@ -132,7 +132,7 @@ export default function Signup({ onLogin }: { onLogin: (user: UserType) => void 
                 </div>
               </div>
 
- <div className="space-y-2">
+              <div className="space-y-2">
                 <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Institutional Email</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -228,5 +228,3 @@ export default function Signup({ onLogin }: { onLogin: (user: UserType) => void 
     </div>
   );
 }
-
-

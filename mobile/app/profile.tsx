@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Switch, ScrollView, Platform } from 'react-native';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { apiPatch } from '../lib/api';
@@ -17,11 +17,19 @@ export default function ProfileScreen() {
   const [registering, setRegistering] = React.useState(false);
 
   const requestPushPermission = async () => {
+    // expo-notifications remote push features are not supported in Expo Go starting with SDK 53
+    const isExpoGo = Constants.appOwnership === 'expo';
+    if (isExpoGo) {
+      warning('Expo Go Limit', 'Push notifications require a development build instead of Expo Go.');
+      return null;
+    }
+
     if (!Device.isDevice) {
       warning('Simulator limit', 'Push notifications require physical test devices.');
       return null;
     }
 
+    const Notifications = require('expo-notifications');
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
@@ -87,7 +95,7 @@ export default function ProfileScreen() {
       </Card>
 
       {/* Notifications Controls */}
-      <Card className="mb-6 space-y-4">
+      <Card className="mb-6 gap-4">
         <Text className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
           App Settings
         </Text>

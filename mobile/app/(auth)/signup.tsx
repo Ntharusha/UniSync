@@ -61,14 +61,14 @@ export default function Signup() {
           {/* Header */}
           <View className="items-center mb-8">
             <Text className="text-3xl font-black text-gray-900 tracking-tight">Register Student</Text>
-            <Text className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">
+            <Text className="text-xs text-gray-555 font-bold uppercase tracking-widest mt-1">
               Create a new student account
             </Text>
           </View>
 
           {/* Form */}
-          <View className="space-y-4">
-            <View className="space-y-1.5">
+          <View className="gap-4">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Full Name
               </Text>
@@ -96,7 +96,7 @@ export default function Signup() {
               ) : null}
             </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 University Email Address
               </Text>
@@ -133,7 +133,7 @@ export default function Signup() {
               ) : null}
             </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Registration Number (e.g. 2020-AS-01)
               </Text>
@@ -155,7 +155,7 @@ export default function Signup() {
               />
             </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Password (min 8 characters)
               </Text>
@@ -192,7 +192,7 @@ export default function Signup() {
               ) : null}
             </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                 Confirm Password
               </Text>

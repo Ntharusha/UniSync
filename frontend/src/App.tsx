@@ -14,6 +14,7 @@ import { User as UserType } from './types';
 import { ToastProvider, useToast } from './components/Toast';
 
 import socket from './socket';
+
 function AppInner() {
   const [user, setUser] = useState<UserType | null>(null);
   const { info, error: toastError, success } = useToast();
@@ -42,7 +43,8 @@ function AppInner() {
       };
     }
   }, [user, info, toastError, success]);
- return (
+
+  return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login onLogin={setUser} />} />
@@ -67,8 +69,7 @@ function AppInner() {
                 <Navigate to="/" replace />
               )
             }
-          
-          />       
+          />
 
 
           <Route path="notifications" element={<NotificationsPage user={user!} />} />
@@ -84,7 +85,6 @@ function AppInner() {
   );
 }
 
-
 export default function App() {
   return (
     <ToastProvider>
@@ -92,4 +92,3 @@ export default function App() {
     </ToastProvider>
   );
 }
-

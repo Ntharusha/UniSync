@@ -67,7 +67,7 @@ export async function connectMongo(): Promise<void> {
     const canFallback =
       process.env.NODE_ENV === 'development' &&
       fallback !== primary &&
-      /whitelist|Server selection|ECONNREFUSED|timed out/i.test(msg);
+      /whitelist|Server selection|ECONNREFUSED|timed out|auth/i.test(msg);
 
     if (!canFallback) {
       console.error('MongoDB connection error:', msg);
@@ -102,7 +102,7 @@ export async function connectMongo(): Promise<void> {
           // Seed the in-memory database with initial development data
           console.log('Seeding in-memory database with development data...');
           process.env.SEED_DISCONNECT = 'false';
-          await import('./seed.js');
+          await import('./seed');
           return;
         } catch (memDbErr) {
           const memDbMsg = memDbErr instanceof Error ? memDbErr.message : String(memDbErr);

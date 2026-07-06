@@ -1,0 +1,31 @@
+name: Seed MongoDB Atlas
+
+on:
+  workflow_dispatch:
+
+jobs:
+  seed-atlas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+        continue-on-error: true
+
+      - name: Install backend dependencies (fallback)
+        if: failure()
+        run: npm install --prefix backend
+
+      - name: Seed Atlas database
+        run: npm run seed:atlas --prefix backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-seed-placeholder' }}
+          NODE_ENV: production

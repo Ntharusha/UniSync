@@ -29,3 +29,4 @@ export interface AcademicRequest {
   status: AcademicRequestStatus;
   createdAt?: string;
 }
+

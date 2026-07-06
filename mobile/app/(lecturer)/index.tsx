@@ -156,7 +156,7 @@ export default function LecturerRequests() {
         </View>
 
         {/* Filter Options */}
-        <View className="space-y-2 mb-4">
+        <View className="gap-2 mb-4">
           <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
             Filter Queue
           </Text>
@@ -253,10 +253,10 @@ export default function LecturerRequests() {
       {/* Reschedule Modal/Overlay */}
       {reschedulingAppt && (
         <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: 16 }}>
-          <View className="bg-white w-full rounded-3xl p-6 border border-gray-100 shadow-xl space-y-4">
+          <View className="bg-white w-full rounded-3xl p-6 border border-gray-100 shadow-xl gap-4">
             <Text className="text-base font-black text-gray-900">Reschedule Appointment</Text>
             
-            <View className="space-y-1">
+            <View className="gap-1">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Date (YYYY-MM-DD)</Text>
               <TextInput 
                 value={rescheduleDate}
@@ -267,7 +267,7 @@ export default function LecturerRequests() {
             </View>
 
             <View className="flex-row gap-2">
-              <View className="flex-1 space-y-1">
+              <View className="flex-1 gap-1">
                 <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Start Time (HH:MM)</Text>
                 <TextInput 
                   value={rescheduleStart}
@@ -276,7 +276,7 @@ export default function LecturerRequests() {
                   className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-semibold text-gray-900"
                 />
               </View>
-              <View className="flex-1 space-y-1">
+              <View className="flex-1 gap-1">
                 <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest">End Time (HH:MM)</Text>
                 <TextInput 
                   value={rescheduleEnd}
@@ -287,7 +287,7 @@ export default function LecturerRequests() {
               </View>
             </View>
 
-            <View className="space-y-1">
+            <View className="gap-1">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Reason for Rescheduling</Text>
               <TextInput 
                 value={rescheduleReason}

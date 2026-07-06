@@ -40,7 +40,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     warning: (title, msg) => addToast('warning', title, msg),
   };
 
-   return (
+  return (
     <ToastContext.Provider value={value}>
       {children}
       {/* Toast Container */}
@@ -74,7 +74,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
     info:    'border-l-blue-500',
   };
 
-   return (
+  return (
     <motion.div
       layout
       initial={{ opacity: 0, x: 80, scale: 0.9 }}

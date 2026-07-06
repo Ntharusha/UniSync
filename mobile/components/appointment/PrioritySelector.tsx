@@ -53,11 +53,11 @@ export default function PrioritySelector({ value, onChange }: PrioritySelectorPr
   ];
 
   return (
-    <View className="space-y-2">
+    <View className="gap-2">
       <Text className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
         Priority Level
       </Text>
-      <View className="space-y-2">
+      <View className="gap-2">
         {priorities.map((p) => {
           const isSelected = value === p.value;
 

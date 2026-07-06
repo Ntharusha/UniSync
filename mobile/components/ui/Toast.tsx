@@ -14,7 +14,7 @@ export default function Toast() {
   return (
     <View
       style={{ top: insets.top + 10 }}
-      className="absolute left-4 right-4 z-50 space-y-2 pointer-events-box-none"
+      className="absolute left-4 right-4 z-50 gap-2 pointer-events-box-none"
     >
       {toasts.map((toast) => {
         const getStyles = () => {

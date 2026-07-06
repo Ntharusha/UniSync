@@ -65,7 +65,7 @@ export default function DashboardLayout({ user, onLogout }: { user: UserType, on
         </div>
       </aside>
 
-{/* Main Content */}
+      {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {/* Header */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
@@ -100,7 +100,7 @@ export default function DashboardLayout({ user, onLogout }: { user: UserType, on
           </div>
         </header>
 
-               {/* Content Area */}
+        {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

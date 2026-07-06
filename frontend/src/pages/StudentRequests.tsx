@@ -498,7 +498,7 @@ export default function StudentRequests({ user }: { user: any }) {
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">Supporting Document <span className="text-red-500">•</span></label>
 
-           <div className="relative group">
+            <div className="relative group">
               <input
                 type="file"
                 multiple
@@ -680,24 +680,24 @@ export default function StudentRequests({ user }: { user: any }) {
                       <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* lecturer summary */}
                         <div className="p-4 bg-white border border-gray-200 rounded-2xl">
-                          <div className="text-xs font-black uppercase tracking-widest text-gray-400">Lecturer</div>
-                          <div className="mt-2 font-black text-gray-900">
-                            {lecturers.find((l: any) => l._id === selectedLecturerId)?.name || '—'}
-                          </div>
-                          <div className="text-xs text-gray-500 font-medium">
-                            Department: {lecturers.find((l: any) => l._id === selectedLecturerId)?.department || '—'}
-                          </div>
+                           <div className="text-xs font-black uppercase tracking-widest text-gray-400">Lecturer</div>
+                           <div className="mt-2 font-black text-gray-900">
+                             {lecturers.find((l: any) => l._id === selectedLecturerId)?.name || '—'}
+                           </div>
+                           <div className="text-xs text-gray-500 font-medium">
+                             Department: {lecturers.find((l: any) => l._id === selectedLecturerId)?.department || '—'}
+                           </div>
                         </div>
 
                         {/* time summary */}
                         <div className="p-4 bg-white border border-gray-200 rounded-2xl">
-                          <div className="text-xs font-black uppercase tracking-widest text-gray-400">Time Slot</div>
-                          <div className="mt-2 font-black text-gray-900">
-                            {format(new Date(selectedSlot.start), 'MMM d')} • {format(new Date(selectedSlot.start), 'HH:mm')}
-                          </div>
-                          <div className="text-xs text-gray-500 font-medium">
-                            Duration: {Math.round((new Date(selectedSlot.end).getTime() - new Date(selectedSlot.start).getTime()) / 60000)} minutes
-                          </div>
+                           <div className="text-xs font-black uppercase tracking-widest text-gray-400">Time Slot</div>
+                           <div className="mt-2 font-black text-gray-900">
+                             {format(new Date(selectedSlot.start), 'MMM d')} • {format(new Date(selectedSlot.start), 'HH:mm')}
+                           </div>
+                           <div className="text-xs text-gray-500 font-medium">
+                             Duration: {Math.round((new Date(selectedSlot.end).getTime() - new Date(selectedSlot.start).getTime()) / 60000)} minutes
+                           </div>
                         </div>
                       </div>
 
@@ -849,4 +849,3 @@ export default function StudentRequests({ user }: { user: any }) {
     </div>
   );
 }
-

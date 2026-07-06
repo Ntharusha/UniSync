@@ -40,7 +40,7 @@ export default function Login({ onLogin }: { onLogin: (user: UserType) => void }
     }
   };
 
-   return (
+  return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-vau-maroon/5 rounded-full blur-3xl"></div>

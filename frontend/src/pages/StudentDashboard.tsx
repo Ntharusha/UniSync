@@ -499,7 +499,7 @@ export default function StudentDashboard({ user }: { user: User }) {
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
           />
-          </div>
+        </div>
       </section>
 
       {/* Main Grid */}
@@ -1001,4 +1001,3 @@ function PriorityBtn({ active, color, label, sub, onClick }: { active: boolean, 
     </button>
   );
 }
-

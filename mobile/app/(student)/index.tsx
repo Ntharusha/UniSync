@@ -215,14 +215,14 @@ export default function BookSlot() {
 
       {/* Cascading Request Form */}
       {selectedSlot ? (
-        <View className="space-y-4 mb-10">
-          <View className="bg-white p-5 rounded-3xl border border-gray-100 space-y-4">
+        <View className="gap-4 mb-10">
+          <View className="bg-white p-5 rounded-3xl border border-gray-100 gap-4">
             <Text className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
               Academic Details
             </Text>
 
             {/* Faculty Dropdown */}
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Faculty</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                 {FACULTIES.map((fac) => (
@@ -247,7 +247,7 @@ export default function BookSlot() {
 
             {/* Department Dropdown */}
             {faculty && departmentOptions.length > 0 ? (
-              <View className="space-y-1.5">
+              <View className="gap-1.5">
                 <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Department</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                   {departmentOptions.map((dept) => (
@@ -272,7 +272,7 @@ export default function BookSlot() {
 
             {/* Degree Program Dropdown */}
             {department && degreeOptions.length > 0 ? (
-              <View className="space-y-1.5">
+              <View className="gap-1.5">
                 <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Degree Program</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                   {degreeOptions.map((deg) => (
@@ -293,7 +293,7 @@ export default function BookSlot() {
             ) : null}
 
             {/* Request Type Selector */}
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Request Type</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
                 {REQUEST_TYPES.map((t) => (
@@ -313,7 +313,7 @@ export default function BookSlot() {
             </View>
 
             {/* Inputs */}
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Request Title</Text>
               <TextInput
                 className="bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3.5 text-gray-800 font-bold text-sm"
@@ -324,7 +324,7 @@ export default function BookSlot() {
               />
             </View>
 
-            <View className="space-y-1.5">
+            <View className="gap-1.5">
               <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Description / Reason</Text>
               <TextInput
                 multiline
@@ -342,7 +342,7 @@ export default function BookSlot() {
           <PrioritySelector value={priority} onChange={setPriority} />
 
           {/* Document Attachment Picker */}
-          <View className="bg-white p-5 rounded-3xl border border-gray-100 space-y-4">
+          <View className="bg-white p-5 rounded-3xl border border-gray-100 gap-4">
             <Text className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
               Attachments (Optional)
             </Text>

@@ -67,4 +67,28 @@ function AppInner() {
                 <Navigate to="/" replace />
               )
             }
-          />
+          
+          />       
+
+
+          <Route path="notifications" element={<NotificationsPage user={user!} />} />
+          <Route path="profile" element={<ProfilePage user={user!} onUpdateUser={(updated) => {
+            setUser(updated);
+            localStorage.setItem('user', JSON.stringify(updated));
+          }} />} />
+        </Route>
+        
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppInner />
+    </ToastProvider>
+  );
+}
+

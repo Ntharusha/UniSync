@@ -84,14 +84,14 @@ jobs:
             git pull origin ${{ github.ref_name }}
             
             # Build backend Docker image
-            docker build -t unisync-backend ./backend
+            sudo docker build -t unisync-backend ./backend
             
             # Stop and remove existing container if running
-            docker stop unisync-backend || true
-            docker rm unisync-backend || true
+            sudo docker stop unisync-backend || true
+            sudo docker rm unisync-backend || true
             
             # Run the new container
-            docker run -d --name unisync-backend \
+            sudo docker run -d --name unisync-backend \
               -p 3001:3001 \
               -e PORT=3001 \
               -e NODE_ENV=production \

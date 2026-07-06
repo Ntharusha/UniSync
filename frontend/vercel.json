@@ -3,11 +3,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://YOUR_EC2_BACKEND_PUBLIC_IP:3001/api/:path*"
+      "destination": "http://44.193.206.216:3001/api/:path*"
     },
     {
       "source": "/socket.io/:path*",
-      "destination": "http://YOUR_EC2_BACKEND_PUBLIC_IP:3001/socket.io/:path*"
+      "destination": "http://44.193.206.216:3001/socket.io/:path*"
     },
     {
       "source": "/(.*)",

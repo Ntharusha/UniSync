@@ -107,3 +107,11 @@ export interface AuditLog {
   metadata?: any;
   timestamp: string;
 }
+
+export interface Message {
+  _id: string;
+  appointmentId: string;
+  senderId: User | string;
+  body: string;
+  createdAt: string;
+}

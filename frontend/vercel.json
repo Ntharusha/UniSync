@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://YOUR_EC2_BACKEND_PUBLIC_IP:3001/api/:path*"
+    },
+    {
+      "source": "/socket.io/:path*",
+      "destination": "http://YOUR_EC2_BACKEND_PUBLIC_IP:3001/socket.io/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

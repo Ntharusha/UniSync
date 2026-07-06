@@ -12,6 +12,7 @@ import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LecturerRequests() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { success, error } = useToast();

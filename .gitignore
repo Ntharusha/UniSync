@@ -1,9 +1,42 @@
+# Dependency directories
 node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment files — NEVER commit secrets to version control
+# BUG-004 fix: .env files must be excluded from Git
 .env
 .env.local
+.env.production
+.env.staging
+
+# Uploaded files
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# OS files
 .DS_Store
-*.log
+Thumbs.db
+
+# IDE files
 .vscode/
 .idea/
-build/
-dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Expo and Mobile development
+.expo/
+*.jks
+*.p8
+*.pem
+*.apk
+*.aab
+*.ipa
+*.env.local

@@ -92,3 +92,42 @@ export default function Signup({ onLogin }: { onLogin: (user: UserType) => void 
                 <p className="text-sm font-bold">{error}</p>
               </motion.div>
             )}
+
+<div className="grid grid-cols-2 gap-4">
+              <button
+                type="button"
+                className={`py-3 px-4 text-sm font-bold rounded-2xl transition-all ${
+                  role === 'student' ? 'bg-vau-maroon text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+                onClick={() => setRole('student')}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                className={`py-3 px-4 text-sm font-bold rounded-2xl transition-all ${
+                  role === 'lecturer' ? 'bg-vau-maroon text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+                onClick={() => setRole('lecturer')}
+              >
+                Lecturer
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Full Name</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <User size={20} />
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="John Doe"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+                  />
+                </div>
+              </div>

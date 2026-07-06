@@ -14,3 +14,31 @@ import { User as UserType } from './types';
 import { ToastProvider, useToast } from './components/Toast';
 
 import socket from './socket';
+function AppInner() {
+  const [user, setUser] = useState<UserType | null>(null);
+  const { info, error: toastError, success } = useToast();
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      socket.emit('join', user._id);
+      socket.on('notification', (data) => {
+        // BUG-014 fixed: replaced blocking alert() with toast notification
+        const toastFn = data.type === 'error' || data.type === 'displacement'
+          ? toastError
+          : data.type === 'success'
+            ? success
+            : info;
+        toastFn(data.title || 'Notification', data.message);
+      });
+      return () => {
+        socket.off('notification');
+      };
+    }
+  }, [user, info, toastError, success]);

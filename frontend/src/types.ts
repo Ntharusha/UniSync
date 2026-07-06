@@ -81,3 +81,29 @@ export interface Appointment {
   }[];
   createdAt?: string;
 }
+
+export interface Slot {
+  start: string;
+  end: string;
+  status: 'free' | 'teaching' | 'normal_booked' | 'priority_booked' | 'blocked';
+  appointmentId?: string;
+}
+
+export interface Notification {
+  _id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error' | 'displacement';
+  read: boolean;
+  relatedId?: string;
+  createdAt: string;
+}
+export interface AuditLog {
+  _id: string;
+  actorId: User;
+  action: string;
+  entityType: string;
+  metadata?: any;
+  timestamp: string;
+}

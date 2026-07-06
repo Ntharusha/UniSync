@@ -131,3 +131,102 @@ export default function Signup({ onLogin }: { onLogin: (user: UserType) => void 
                   />
                 </div>
               </div>
+
+ <div className="space-y-2">
+                <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Institutional Email</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <User size={20} />
+                  </span>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@vau.ac.lk"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+                  />
+                </div>
+              </div>
+
+              {role === 'student' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Registration #</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                      <Hash size={20} />
+                    </span>
+                    <input
+                      type="text"
+                      required
+                      value={regNumber}
+                      onChange={(e) => setRegNumber(e.target.value)}
+                      placeholder="2019/V/123"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Department</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Building size={20} />
+                  </span>
+                  <input
+                    type="text"
+                    required
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    placeholder="Applied Science"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-black text-gray-400 uppercase tracking-widest px-1">Password</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Lock size={20} />
+                  </span>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-vau-maroon/20 text-lg font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 w-full flex items-center justify-center p-5 bg-vau-maroon text-white rounded-2xl hover:bg-vau-maroon/90 hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:scale-100"
+            >
+              <span className="text-lg font-black mr-2">
+                {loading ? 'Registering...' : 'Sign Up'}
+              </span>
+              {!loading && <ArrowRight size={20} />}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center border-t border-gray-100 pt-6">
+            <p className="text-sm text-gray-600 font-medium">
+              Already have an account?{' '}
+              <Link to="/login" className="text-vau-maroon font-bold hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+

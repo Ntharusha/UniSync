@@ -73,3 +73,35 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }
     warning: 'border-l-amber-500',
     info:    'border-l-blue-500',
   };
+
+   return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: 80, scale: 0.9 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 80, scale: 0.9 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      className={`pointer-events-auto bg-white rounded-2xl shadow-2xl border border-gray-100 border-l-4 ${borders[toast.type]} max-w-sm w-full flex items-start gap-3 p-4`}
+    >
+      {icons[toast.type]}
+      <div className="flex-1 min-w-0">
+        <p className="font-bold text-gray-900 text-sm leading-snug">{toast.title}</p>
+        {toast.message && (
+          <p className="text-xs text-gray-500 mt-0.5 leading-snug whitespace-pre-line">{toast.message}</p>
+        )}
+      </div>
+      <button
+        onClick={onDismiss}
+        className="shrink-0 p-1 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-700"
+      >
+        <X size={14} />
+      </button>
+    </motion.div>
+  );
+}
+
+export function useToast(): ToastContextValue {
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error('useToast must be used within a ToastProvider');
+  return ctx;
+}

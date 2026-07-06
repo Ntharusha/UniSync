@@ -31,3 +31,13 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+        - name: Install Mobile Dependencies
+        run: |
+          cd mobile
+          npm install --legacy-peer-deps
+
+      - name: Expo Prebuild
+        run: |
+          cd mobile
+          npx expo prebuild --platform android --no-install

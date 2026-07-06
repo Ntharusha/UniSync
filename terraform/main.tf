@@ -58,3 +58,11 @@ resource "aws_instance" "unisync_backend" {
     Name = "UniSync-Backend-Server"
   }
 }
+
+# Append this to the bottom of your terraform file
+
+# Output the Public IP
+output "backend_public_ip" {
+  value       = aws_instance.unisync_backend.public_ip
+  description = "The public IP address of the EC2 backend instance"
+}

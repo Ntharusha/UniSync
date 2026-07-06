@@ -11,8 +11,8 @@ on:
       - dev
 
 jobs:
-  validate:
-    name: Build & Test
+  test-backend:
+    name: Backend Build & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +28,6 @@ jobs:
       - name: Install Root Dependencies
         run: npm ci
 
-        # Append this to the 'validate' job steps
       - name: Install Backend Dependencies
         run: npm ci --prefix backend
 
@@ -38,17 +37,32 @@ jobs:
           JWT_SECRET: "test-secret"
           PORT: 3001
 
-          # Append this to the 'validate' job steps
+  test-frontend:
+    name: Frontend Lint & Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install Root Dependencies
+        run: npm ci
+
       - name: Install Frontend Dependencies
         run: npm ci --prefix frontend
 
       - name: Run Frontend Linting
         run: npm run lint --prefix frontend
 
-        # Add this as a new job at the same hierarchy level as 'validate'
   deploy-backend:
-    name: Deploy Backend to EC2
-    needs: validate
+    name: Deploy Backend to EC2 (Docker)
+    needs: [test-backend, test-frontend]
     if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
     runs-on: ubuntu-latest
 
@@ -69,12 +83,19 @@ jobs:
             git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
             
-            # Create production .env file
-            echo "PORT=3001" > backend/.env
-            echo "NODE_ENV=production" >> backend/.env
-            echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> backend/.env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
+            # Build backend Docker image
+            docker build -t unisync-backend ./backend
             
-            # Restart backend
-            npm install --prefix backend
-            pm2 restart unisync-backend || pm2 start backend/dist/index.js --name "unisync-backend"
+            # Stop and remove existing container if running
+            docker stop unisync-backend || true
+            docker rm unisync-backend || true
+            
+            # Run the new container
+            docker run -d --name unisync-backend \
+              -p 3001:3001 \
+              -e PORT=3001 \
+              -e NODE_ENV=production \
+              -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              --restart unless-stopped \
+              unisync-backend

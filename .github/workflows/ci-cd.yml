@@ -37,3 +37,10 @@ jobs:
         env:
           JWT_SECRET: "test-secret"
           PORT: 3001
+
+          # Append this to the 'validate' job steps
+      - name: Install Frontend Dependencies
+        run: npm ci --prefix frontend
+
+      - name: Run Frontend Linting
+        run: npm run lint --prefix frontend

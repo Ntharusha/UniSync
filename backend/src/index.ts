@@ -692,3 +692,316 @@ app.post('/api/timetable/parse', authenticateToken, upload.single('file'), async
             break;
           }
         }
+
+
+        // Try to find time patterns like HH:MM or HH.MM
+        const timeMatch = line.match(/(\d{1,2}[:.]\d{2})/g);
+        let startTime = '';
+        let endTime = '';
+        if (timeMatch && timeMatch.length >= 2) {
+          startTime = timeMatch[0].replace('.', ':');
+          endTime = timeMatch[1].replace('.', ':');
+        }
+
+        // Basic course name extraction (everything else on the line)
+        const courseName = line.replace(/[A-Za-z]{3,10}|(\d{1,2}[:.]\d{2})/g, '').trim();
+
+        return {
+          dayOfWeek,
+          startTime,
+          endTime,
+          courseName: courseName || 'Unresolved Course',
+          room: 'TBA'
+        };
+      }).filter((item: any) => item.dayOfWeek !== null && item.startTime && item.endTime);
+    }
+
+    // Format results to match TimetableBlock schema
+    const formatted = results.map(item => ({
+      dayOfWeek: parseInt(item.dayOfWeek),
+      startTime: item.startTime,
+      endTime: item.endTime,
+      courseName: item.courseName,
+      room: item.room,
+      semester: item.semester || '2026-S1'
+    }));
+
+    res.json(formatted);
+  } catch (err: any) {
+    console.error('Parse error:', err);
+    res.status(400).json({ error: 'Failed to parse file. ' + err.message });
+  } finally {
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+  }
+});
+
+// Helper function for conflict detection
+const findConflicts = async (lecturerId: string, blocks: any[]) => {
+  const appts = await Appointment.find({
+    lecturerId: new mongoose.Types.ObjectId(lecturerId),
+    status: { $in: ['approved', 'pending'] }
+  })
+    .populate('studentId', 'name email role')
+    .populate('lecturerId', 'name email role');
+
+  const conflicts: any[] = [];
+
+  for (const appt of appts) {
+    const apptDayOfWeek = (appt.requestedStart as Date).getDay();
+    const apptStart = appt.requestedStart as Date;
+    const apptEnd = appt.requestedEnd as Date;
+
+    for (const block of blocks) {
+      if (block.dayOfWeek !== apptDayOfWeek) continue;
+
+      const [bsH, bsM] = String(block.startTime).split(':').map(Number);
+      const [beH, beM] = String(block.endTime).split(':').map(Number);
+
+      const blockStart = new Date(apptStart);
+      blockStart.setHours(bsH, bsM, 0, 0);
+
+      const blockEnd = new Date(apptStart); // Use apptStart as base — same day reference as blockStart
+      blockEnd.setHours(beH, beM, 0, 0);
+
+      const overlaps = blockStart < apptEnd && blockEnd > apptStart;
+      if (!overlaps) continue;
+
+      const safe: any = appt.toObject({ getters: false, virtuals: false });
+      // test expects res.body[0].student.name
+      safe.student = appt.studentId;
+      safe.lecturer = appt.lecturerId;
+
+      // activation expects these fields
+      safe._id = appt._id;
+      safe.studentId = appt.studentId;
+      safe.lecturerId = appt.lecturerId;
+      safe.requestedStart = appt.requestedStart;
+      safe.requestedEnd = appt.requestedEnd;
+
+      conflicts.push(safe);
+      break;
+    }
+  }
+
+  return conflicts;
+};
+
+// Helper to suggest alternative slots
+const suggestAlternativeSlots = async (lecturerId: string, baseDate: Date, limit: number = 3) => {
+  const dateStr = baseDate.toISOString().split('T')[0];
+  const dayOfWeek = baseDate.getUTCDay();
+  const [year, month, day] = dateStr.split('-').map(Number);
+
+  const officeHours = await AvailabilityRule.find({
+    lecturerId,
+    type: 'office_hours',
+    dayOfWeek
+  });
+
+  const teachingBlocks = await TimetableBlock.find({
+    lecturerId,
+    isActive: true,
+    dayOfWeek
+  });
+
+  const appointments = await Appointment.find({
+    lecturerId,
+    status: { $in: ['approved', 'pending'] },
+    requestedStart: {
+      $gte: new Date(year, month - 1, day, 0, 0, 0, 0),
+      $lte: new Date(year, month - 1, day, 23, 59, 59, 999)
+    }
+  });
+
+  const alternatives: any[] = [];
+  for (const oh of officeHours) {
+    if (!oh.startTime || !oh.endTime) continue;
+    let current = new Date(`${dateStr}T${oh.startTime}:00`);
+    const end = new Date(`${dateStr}T${oh.endTime}:00`);
+
+    while (current < end && alternatives.length < limit) {
+      const slotEnd = new Date(current.getTime() + 60 * 60000);
+
+      const isConflict = teachingBlocks.some(tb => {
+        const tbStart = new Date(`${dateStr}T${tb.startTime}:00`);
+        const tbEnd = new Date(`${dateStr}T${tb.endTime}:00`);
+        return current < tbEnd && slotEnd > tbStart;
+      }) || appointments.some(a => {
+        return a.requestedStart < slotEnd && a.requestedEnd > current;
+      });
+
+      if (!isConflict) {
+        alternatives.push({
+          start: current.toISOString(),
+          end: slotEnd.toISOString()
+        });
+      }
+      current = slotEnd;
+    }
+  }
+  alternatives.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  return alternatives;
+};
+
+// 2. Check Conflicts (Preview)
+app.post('/api/timetable/conflicts', authenticateToken, async (req: Request, res: Response) => {
+  const { lecturerId, blocks } = req.body;
+  if (!lecturerId || !blocks) return res.status(400).json({ error: 'lecturerId and blocks are required' });
+
+  try {
+    const conflicts = await findConflicts(lecturerId, blocks);
+    res.json(conflicts);
+  } catch (err: any) {
+    console.error('conflicts error:', err);
+    res.status(500).json({ error: err?.message || 'Unknown error', details: String(err) });
+  }
+
+});
+
+// 3. Activate Timetable & Conflict Check
+app.post('/api/timetable/activate', authenticateToken, async (req: Request, res: Response) => {
+  const { lecturerId, blocks } = req.body;
+
+  try {
+    // 1. Deactivate old blocks
+    await TimetableBlock.updateMany({ lecturerId }, { isActive: false });
+
+    // 2. Insert new blocks
+    const newBlocks = blocks.map((b: any) => ({ ...b, lecturerId, isActive: true }));
+    await TimetableBlock.insertMany(newBlocks);
+
+    // 3. Level 3 Overlap Detection: Find conflicting appointments
+    const conflicts = await findConflicts(lecturerId, blocks);
+
+    // 4. Notify affected students and lecturer
+    for (const conflict of conflicts) {
+      // Support multiple conflict shapes (tests vs runtime)
+      const appointmentId = conflict._id ?? conflict.appointmentId;
+      const studentId = conflict.studentId ?? conflict.student?._id ?? conflict.student;
+
+      await Appointment.findByIdAndUpdate(appointmentId, {
+        status: 'cancelled',
+        $push: {
+          statusHistory: {
+            status: 'cancelled',
+            reason: 'Conflict with newly activated timetable',
+            at: new Date()
+          }
+        }
+      });
+
+      if (studentId) {
+        io.to(studentId.toString()).emit('notification', {
+          userId: studentId,
+          message: 'Your appointment was cancelled due to a schedule change.',
+          type: 'error'
+        });
+      }
+
+      await new Notification({
+        userId: studentId,
+        title: 'Appointment Cancelled',
+        message: `Your appointment on ${new Date(conflict.requestedStart ?? conflict.appointmentStart ?? Date.now()).toLocaleDateString()} was cancelled due to a timetable update.`,
+        type: 'error',
+        relatedId: appointmentId
+      }).save();
+    }
+
+    res.json({
+      message: 'Timetable activated successfully',
+      conflictsFound: conflicts.length,
+      conflicts
+    });
+
+    // Audit log
+    await new AuditLog({
+      actorId: lecturerId,
+      action: 'TIMETABLE_ACTIVATED',
+      entityType: 'TimetableBlock',
+      metadata: { blocksCount: blocks.length, conflictsCount: conflicts.length }
+    }).save();
+
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get rules for a lecturer (moved above generic route to avoid shadowing)
+
+// Create/Update a rule
+app.post('/api/availability/rules', authenticateToken, async (req: Request, res: Response) => {
+  const { lecturerId, type, dayOfWeek, startTime, endTime, bufferMins, date, recurrence } = req.body;
+  try {
+    const rule = new AvailabilityRule({
+      lecturerId,
+      type,
+      dayOfWeek,
+      startTime,
+      endTime,
+      bufferMins,
+      date,
+      recurrence
+    });
+    await rule.save();
+
+    // Clear cache/Notify clients
+    io.emit('slot:updated', { lecturerId, date: date ? date.split('T')[0] : 'dynamic' });
+
+    res.status(201).json(rule);
+
+    // Audit log
+    await new AuditLog({
+      actorId: lecturerId,
+      action: 'AVAILABILITY_RULE_CREATED',
+      entityType: 'AvailabilityRule',
+      entityId: rule._id,
+      metadata: { type }
+    }).save();
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete a rule
+app.delete('/api/availability/rules/:id', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const rule = await AvailabilityRule.findById(req.params.id);
+    if (!rule) return res.status(404).json({ error: 'Rule not found' });
+
+    const lecturerId = rule.lecturerId;
+    await AvailabilityRule.findByIdAndDelete(req.params.id);
+
+    io.emit('slot:updated', { lecturerId, date: 'dynamic' });
+    res.sendStatus(200);
+
+    // Audit log
+    await new AuditLog({
+      actorId: lecturerId.toString(),
+      action: 'AVAILABILITY_RULE_DELETED',
+      entityType: 'AvailabilityRule',
+      entityId: req.params.id as any
+    }).save();
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Request an Appointment
+app.post('/api/appointments', authenticateToken, requireRole('student', 'admin'), async (req: Request, res: Response) => {
+  const { studentId, lecturerId, requestedStart, requestedEnd, priority, reason } = req.body;
+
+  // BUG-017 fixed: validate date range server-side
+  const start = new Date(requestedStart);
+  const end = new Date(requestedEnd);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return res.status(400).json({ error: 'Invalid date format for requestedStart or requestedEnd.' });
+  }
+  if (start >= end) {
+    return res.status(400).json({ error: 'requestedStart must be before requestedEnd.' });
+  }
+  if (start < new Date()) {
+    return res.status(400).json({ error: 'Cannot book an appointment in the past.' });
+  }
+
+  const priorityWeights: Record<string, number> = { normal: 1, academic_urgent: 2, emergency: 3 };
+  const incomingWeight = priorityWeights[priority] || 1;

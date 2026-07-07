@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>UniSync – Final Year Project Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --primary: #8B1A3B; /* Vavuniya Maroon */
+  --primary-light: #FDF2F4;
+  --text-main: #1F2937;
+  --text-muted: #4B5563;
+  --bg-main: #FFFFFF;
+  --bg-sub: #F9FAFB;
+  --border: #E5E7EB;
+  --accent-green: #059669;
+  --accent-orange: #D97706;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-sub);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: var(--bg-main);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 60px 80px 100px 80px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-main);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+/* Typography & Layout elements */
+.tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--text-main);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+.sub {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 10px;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+/* Grid systems */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 100%;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Cards & lists */
+.card {
+  background: var(--bg-sub);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 20px rgba(139, 26, 59, 0.05);
+}
+
+.card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.card ul {
+  margin-left: 18px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.card li {
+  margin-bottom: 6px;
+}
+
+/* Screenshot Placeholder */
+.screenshot-placeholder {
+  border: 2px dashed #CBD5E1;
+  background: #F8FAFC;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  min-height: 280px;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+.screenshot-placeholder:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.screenshot-placeholder span {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+.screenshot-placeholder p {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.screenshot-placeholder small {
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.timeline-number {
+  background: var(--primary);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.timeline-content h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.timeline-content p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Chips & Pills */
+.chip {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid rgba(139, 26, 59, 0.2);
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+.chip.green {
+  background: #ECFDF5;
+  color: #047857;
+  border-color: rgba(4, 120, 87, 0.2);
+}
+.chip.orange {
+  background: #FFFBEB;
+  color: #B45309;
+  border-color: rgba(180, 83, 9, 0.2);
+}
+
+/* Hero Slide specific styles */
+.hero {
+  text-align: center;
+  max-width: 900px;
+  margin: auto;
+}
+.hero h1 {
+  font-size: 4rem;
+  color: var(--primary);
+}
+.hero-divider {
+  width: 80px;
+  height: 4px;
+  background: var(--primary);
+  margin: 20px auto;
+  border-radius: 2px;
+}
+.project-details {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+.detail-column {
+  text-align: left;
+  border-left: 3px solid var(--primary);
+  padding-left: 16px;
+}
+.detail-column h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.detail-column p {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+/* Navigation controls */
+.controls {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+.dots {
+  display: flex;
+  gap: 8px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D1D5DB;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.dot.active {
+  background: var(--primary);
+  transform: scale(1.3);
+}
+.btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+.btn:hover {
+  color: var(--primary);
+}
+.slide-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Footer logo */
+.footer-logo {
+  position: fixed;
+  bottom: 30px;
+  right: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.footer-logo img {
+  height: 20px;
+}
+
+/* Timer details top left */
+.timer-indicator {
+  position: fixed;
+  top: 25px;
+  left: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<div class="timer-indicator">20 Min Session (10m Pres + 5m Demo + 5m Q&A)</div>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Title & Group Details -->
+  <div class="slide active" id="s0">
+    <div class="hero">
+      <div class="tag">🎓 Final Year Project Presentation</div>
+      <h1>UniSync</h1>
+      <p class="sub" style="margin: 0 auto;">A Smart, Timetable-Aware University Appointment Scheduling Platform</p>
+      <div class="hero-divider"></div>
+      
+      <div class="project-details">
+        <div class="detail-column">
+          <h4>Presented By</h4>
+          <p>Group Members</p>
+          <p style="font-weight: 400; font-size: 0.85rem; margin-top: 4px; color: var(--text-muted);">
+            Member 1 (Reg No: XXXX/XX/XX)<br/>
+            Member 2 (Reg No: XXXX/XX/XX)<br/>
+            Member 3 (Reg No: XXXX/XX/XX)<br/>
+            Member 4 (Reg No: XXXX/XX/XX)
+          </p>
+        </div>
+        <div class="detail-column">
+          <h4>Supervisor</h4>
+          <p>Name of Supervisor</p>
+          <p style="font-weight: 400; font-size: 0.85rem; margin-top: 4px; color: var(--text-muted);">
+            Department of Physical Science<br/>
+            Faculty of Applied Science<br/>
+            University of Vavuniya
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Brief Introduction -->
+  <div class="slide" id="s1">
+    <div class="tag">Introduction</div>
+    <h2>Project Background</h2>
+    <div class="container">
+      <div class="grid2">
+        <div class="card">
+          <h3>🏫 Context</h3>
+          <p>In modern universities, communication between students and lecturers regarding academic queries, project discussions, and administrative approvals is highly unstructured.</p>
+          <p style="margin-top: 10px;">Common tools like email or WhatsApp lead to delayed replies, schedule conflicts, and a lack of transparency for both parties.</p>
+        </div>
+        <div class="card">
+          <h3>🎯 The Solution: UniSync</h3>
+          <p>UniSync replaces informal messaging with a real-time, timetable-aware booking workspace where students can seamlessly schedule verified, non-conflicting time slots.</p>
+          <p style="margin-top: 10px;">Ensures optimal coordination by integrating official timetables and academic calendars into a single, unified channel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Requirement Analysis - Functional -->
+  <div class="slide" id="s2">
+    <div class="tag">Requirement Analysis (1/2)</div>
+    <h2>Functional Requirements</h2>
+    <div class="container">
+      <div class="grid3">
+        <div class="card">
+          <h3>👨‍🎓 Student Role</h3>
+          <ul>
+            <li>Browse lecturer profiles and view true availability schedules</li>
+            <li>Select free slots & specify request title, reason & priority</li>
+            <li>Real-time notifications upon request status updates</li>
+            <li>Direct message communication inside the appointment context</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>👩‍🏫 Lecturer Role</h3>
+          <ul>
+            <li>Define default weekly office hours and blackout times</li>
+            <li>Upload official timetables to automatically eliminate slots</li>
+            <li>Approve, Reject, or reschedule student requests</li>
+            <li>Real-time chat interactions with students</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🛡️ Administrator Role</h3>
+          <ul>
+            <li>Manage all student, lecturer, and admin accounts</li>
+            <li>Execute bulk CSV/Excel user imports</li>
+            <li>Monitor and review system-wide audit logs</li>
+            <li>Maintain global timetable data & department details</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Requirement Analysis - System Qualities -->
+  <div class="slide" id="s3">
+    <div class="tag">Requirement Analysis (2/2)</div>
+    <h2>System Qualities & Non-Functional</h2>
+    <div class="container">
+      <div class="grid2">
+        <div class="card">
+          <h3>🛡️ Security & Privacy</h3>
+          <p>Password hashing via <strong>bcryptjs</strong> and route authorization using <strong>JSON Web Tokens (JWT)</strong>.</p>
+          <p style="margin-top: 10px;">Explicit role validation middleware prevents cross-role privilege escalation (e.g. students accessing admin screens).</p>
+        </div>
+        <div class="card">
+          <h3>⚡ Real-Time Responsiveness</h3>
+          <p>Instant booking state changes, incoming chat alerts, and urgent reminders delivered under <strong>500ms</strong> latency using persistent **WebSocket (Socket.io)** connections.</p>
+        </div>
+        <div class="card">
+          <h3>📈 Scalability & Reliability</h3>
+          <p>Timetable parsing queue management using **BullMQ** with a Redis-backed engine to guarantee background job reliability without blocking server CPU processes.</p>
+        </div>
+        <div class="card">
+          <h3>🔧 Database Integrity</h3>
+          <p>Comprehensive Mongoose schemas with indexing on keys (e.g., email, department, date) to minimize lookup latency and guarantee absolute data consistency.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: System Design - Architecture & Tech Stack -->
+  <div class="slide" id="s4">
+    <div class="tag">System Design (1/3)</div>
+    <h2>Architecture & Technology Stack</h2>
+    <div class="container">
+      <div class="grid2">
+        <div class="card">
+          <h3>🛠️ Technology Stack</h3>
+          <div style="margin-top: 8px;">
+            <p style="font-weight: 600; margin-bottom: 6px;">Web Platform:</p>
+            <span class="chip">React</span>
+            <span class="chip">TypeScript</span>
+            <span class="chip">Tailwind CSS</span>
+            <span class="chip">Express.js</span>
+            <span class="chip">MongoDB</span>
+            <span class="chip">Socket.io</span>
+          </div>
+          <div style="margin-top: 12px;">
+            <p style="font-weight: 600; margin-bottom: 6px;">Mobile Platform:</p>
+            <span class="chip">React Native</span>
+            <span class="chip">Expo</span>
+            <span class="chip">Zustand</span>
+            <span class="chip font-mono">TanStack Query</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>📡 System Architecture</h3>
+          <p>A decoupled Client-Server architecture utilizing: </p>
+          <ul style="margin-top: 8px;">
+            <li><strong>REST API Layer</strong> for general transactional processes (auth, configuration, user data).</li>
+            <li><strong>WebSocket Layer</strong> for bidirectionally pushed updates (chat messages, real-time slot bookings).</li>
+            <li><strong>Redis Queue Engine</strong> for asynchronous processing (parsing massive files, scheduling notification deliveries).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: System Design - Data Modeling -->
+  <div class="slide" id="s5">
+    <div class="tag">System Design (2/3)</div>
+    <h2>Database Schema & Data Models</h2>
+    <div class="container">
+      <div class="grid3">
+        <div class="card">
+          <h3>👤 User Schema</h3>
+          <p>Maintains registration details, roles, departments, and specific academic metadata.</p>
+          <ul style="margin-top: 8px;">
+            <li>Name, Email, Password</li>
+            <li>Role (Student / Lecturer / Admin)</li>
+            <li>Department, Faculty</li>
+            <li>Registration No / Employee ID</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>📅 Appointment Schema</h3>
+          <p>Models transactions between student requestors and host lecturers.</p>
+          <ul style="margin-top: 8px;">
+            <li>Student Ref (ObjectId)</li>
+            <li>Lecturer Ref (ObjectId)</li>
+            <li>Time Block Details</li>
+            <li>Priority (Normal/Urgent/Emergency)</li>
+            <li>Status (Pending/Approved/Rejected)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🗓️ Timetable Block Schema</h3>
+          <p>Ensures correct booking checks by mapping scheduled lectures.</p>
+          <ul style="margin-top: 8px;">
+            <li>Lecturer Ref</li>
+            <li>Day of Week</li>
+            <li>Start & End Times</li>
+            <li>Course Details</li>
+            <li>Ingestion Source File</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: System Design - Smart Matching Algorithm -->
+  <div class="slide" id="s6">
+    <div class="tag">System Design (3/3)</div>
+    <h2>Timetable Conflict & Priority Rules</h2>
+    <div class="container">
+      <div class="grid2">
+        <div class="card">
+          <h3>🔄 Conflict Detection Workflow</h3>
+          <div class="timeline" style="margin-top: 8px;">
+            <div class="timeline-item">
+              <div class="timeline-number">1</div>
+              <div class="timeline-content">
+                <h4>Read Base Availability</h4>
+                <p>Retrieves the lecturer's customized standard working hour windows.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-number">2</div>
+              <div class="timeline-content">
+                <h4>Subtract Lecture Times</h4>
+                <p>Removes any times matching the lecturer's parsed academic timetable classes.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-number">3</div>
+              <div class="timeline-content">
+                <h4>Filter Existing Bookings</h4>
+                <p>Eliminates slots already occupied by active approved appointments.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>🔥 Priority Override Rules</h3>
+          <p>To ensure critical student situations are resolved, the system operates on a priority ranking:</p>
+          <div style="margin-top: 12px;">
+            <span class="chip orange">Emergency (High)</span>
+            <span class="chip">Urgent (Medium)</span>
+            <span class="chip">Normal (Low)</span>
+          </div>
+          <p style="margin-top: 12px;">If a request is flagged as an **Emergency** and validated by a lecturer, the slot engine can systematically prioritize the scheduling over any standard low-priority conflict.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Implementation & Outcome - Student View -->
+  <div class="slide" id="s7">
+    <div class="tag">Implementation &amp; Outcome (1/3)</div>
+    <h2>Student &amp; Lecturer Web Workflow</h2>
+    <div class="grid2" style="flex-grow: 1;">
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>🖥️ Student Experience</h3>
+        <p>A highly reactive web page allows students to select department faculty, view individual schedules, select available slots, choose request priorities, and monitor current status updates immediately.</p>
+        <p style="margin-top: 10px; font-weight: 600;">Core features implemented:</p>
+        <ul style="margin-top: 6px;">
+          <li>Interactive visual calendar grids</li>
+          <li>Real-time state indicator buttons</li>
+          <li>Direct chat interface integrations</li>
+        </ul>
+      </div>
+      
+      <!-- SCREENSHOT SPACE -->
+      <div class="screenshot-placeholder">
+        <span>🖥️</span>
+        <p>Web Student Dashboard Screenshot Space</p>
+        <small>Place screenshot: unisync_web_student_*.png here</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Implementation & Outcome - Mobile Version -->
+  <div class="slide" id="s8">
+    <div class="tag">Implementation &amp; Outcome (2/3)</div>
+    <h2>Mobile Application Workflow</h2>
+    <div class="grid2" style="flex-grow: 1;">
+      <!-- SCREENSHOT SPACE -->
+      <div class="screenshot-placeholder">
+        <span>📱</span>
+        <p>Mobile App Screenshot Space</p>
+        <small>Place screenshot: unisync_login_screen_*.png or unisync_student_dashboard_*.png here</small>
+      </div>
+
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>📱 Cross-Platform Experience</h3>
+        <p>Built with React Native and Expo, offering students and lecturers a streamlined native mobile app interface to review slots and book appointments on the go.</p>
+        <p style="margin-top: 10px; font-weight: 600;">Mobile capabilities completed:</p>
+        <ul style="margin-top: 6px;">
+          <li>Zustand-based global auth token persistence</li>
+          <li>Fast, cached API calls with TanStack Query</li>
+          <li>Responsive card-based layouts mimicking native systems</li>
+          <li>Optimized Expo web view previews for simple browser testing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Implementation & Outcome - Admin & Timetable -->
+  <div class="slide" id="s9">
+    <div class="tag">Implementation &amp; Outcome (3/3)</div>
+    <h2>Admin Management &amp; Timetable Ingestion</h2>
+    <div class="grid2" style="flex-grow: 1;">
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>⚙️ Central Administration</h3>
+        <p>A central control panel dedicated to admins to handle university users, system records, and raw file uploads.</p>
+        <p style="margin-top: 10px; font-weight: 600;">Key functionalities:</p>
+        <ul style="margin-top: 6px;">
+          <li>PapaParse integration for batch CSV student uploads</li>
+          <li>Dynamic PDF and image parsing for lecturer timetables</li>
+          <li>Read-only system audit log streams</li>
+        </ul>
+      </div>
+      
+      <!-- SCREENSHOT SPACE -->
+      <div class="screenshot-placeholder">
+        <span>🖥️</span>
+        <p>Web Admin Dashboard Screenshot Space</p>
+        <small>Place screenshot: unisync_web_admin_*.png here</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Future Work -->
+  <div class="slide" id="s10">
+    <div class="tag">Future Steps</div>
+    <h2>Future Enhancements</h2>
+    <div class="container">
+      <div class="grid3">
+        <div class="card">
+          <h3>🔔 Native Push Alerts</h3>
+          <p>Integration of Firebase Cloud Messaging (FCM) to send instant background device alerts to students when their appointment is approved.</p>
+        </div>
+        <div class="card">
+          <h3>📅 Calendar Integration</h3>
+          <p>Exporting approved appointments directly into users' Google Calendar or Apple Calendar using .ics file generation.</p>
+        </div>
+        <div class="card">
+          <h3>🤖 Intelligent Scheduling</h3>
+          <p>Using predictive heuristics to suggest optimal meeting slots based on historical appointment times and duration patterns.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Conclusion & Q&A -->
+  <div class="slide" id="s11">
+    <div class="hero">
+      <div class="tag">Conclusion &amp; Demonstration</div>
+      <h1>Thank You</h1>
+      <p class="sub" style="margin: 0 auto; font-size: 1.3rem;">Questions &amp; Answers Session</p>
+      <div class="hero-divider"></div>
+      
+      <div class="card" style="max-width: 600px; margin: 20px auto; text-align: left;">
+        <h3 style="color: var(--primary);">⏱️ Demonstration Breakdown (5 mins)</h3>
+        <p style="margin-top: 6px;">1. Student booking slot with normal / emergency priority</p>
+        <p style="margin-top: 4px;">2. Lecturer scheduling & availability update on dashboard</p>
+        <p style="margin-top: 4px;">3. Real-time chat & socket notification updates</p>
+        <p style="margin-top: 4px;">4. Admin user creation & batch list imports</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Control Elements -->
+<div class="controls">
+  <button class="btn" id="prev" title="Previous Slide (Left Arrow)">&#8592; Prev</button>
+  <div class="dots" id="dots"></div>
+  <div class="slide-number" id="snum">01 / 12</div>
+  <button class="btn" id="next" title="Next Slide (Right Arrow / Space)">Next &#8594;</button>
+</div>
+
+<div class="footer-logo">
+  <span>UniSync Project Deck</span>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const snumEl = document.getElementById('snum');
+let currentSlide = 0;
+
+// Render dots dynamically
+slides.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  dotsEl.appendChild(dot);
+});
+
+function goToSlide(n) {
+  // Hide current slide
+  slides[currentSlide].classList.remove('active');
+  dotsEl.children[currentSlide].classList.remove('active');
+  
+  // Update slide index (loop around limits)
+  currentSlide = (n + slides.length) % slides.length;
+  
+  // Show new slide
+  slides[currentSlide].classList.add('active');
+  dotsEl.children[currentSlide].classList.add('active');
+  
+  // Update slide number display
+  snumEl.textContent = String(currentSlide + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+}
+
+document.getElementById('next').onclick = () => goToSlide(currentSlide + 1);
+document.getElementById('prev').onclick = () => goToSlide(currentSlide - 1);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+    goToSlide(currentSlide + 1);
+    e.preventDefault();
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+    goToSlide(currentSlide - 1);
+    e.preventDefault();
+  }
+});
+</script>
+
+</body>
+</html>

@@ -6,6 +6,10 @@
       "destination": "http://44.200.237.97:3001/api/:path*"
     },
     {
+      "source": "/uploads/:path*",
+      "destination": "http://44.200.237.97:3001/uploads/:path*"
+    },
+    {
       "source": "/socket.io/:path*",
       "destination": "http://44.200.237.97:3001/socket.io/:path*"
     },

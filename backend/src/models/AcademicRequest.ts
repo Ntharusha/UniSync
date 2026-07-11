@@ -65,7 +65,7 @@ const DEGREE_PROGRAMS_BY_DEPT: Record<string, string[]> = {
 
 export interface IAcademicRequest {
   _id?: string;
-  studentId: string;
+  studentId: mongoose.Types.ObjectId | string;
   faculty: typeof FACULTIES[number];
   department: string;
   degreeProgram: string;
@@ -131,7 +131,7 @@ const academicRequestSchema = new mongoose.Schema<IAcademicRequest>(
 );
 
 // Add custom validation for department based on faculty
-academicRequestSchema.pre('validate', function(next) {
+academicRequestSchema.pre('validate', function(this: any, next) {
   const faculty = this.faculty;
   const department = this.department;
   
@@ -145,7 +145,7 @@ academicRequestSchema.pre('validate', function(next) {
 });
 
 // Add custom validation for degreeProgram based on department
-academicRequestSchema.pre('validate', function(next) {
+academicRequestSchema.pre('validate', function(this: any, next) {
   const department = this.department;
   const degreeProgram = this.degreeProgram;
   

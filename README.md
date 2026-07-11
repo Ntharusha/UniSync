@@ -233,6 +233,34 @@ Uni Sync/
 
 ---
 
+## 🐳 Docker Deployment
+
+For campus deployment, the system can be run completely containerized using Docker and Docker Compose. This packages the backend, frontend, database, and caching servers into a seamless, unified ecosystem.
+
+### How to Run
+
+1. **Build and Run the Containers**:
+   ```bash
+   docker-compose up --build -d
+   ```
+   This will build the custom `frontend` and `backend` images, pull the official MongoDB and Redis images, and launch the entire application on port `80`.
+
+2. **Accessing the App**:
+   - **Web Frontend**: Navigate to `http://localhost` (or your campus server's domain/IP on port 80).
+   - **Backend API**: `http://localhost/api` (proxied by Nginx).
+   - **WebSockets**: `http://localhost/socket.io` (proxied by Nginx).
+
+3. **Automatic Seeding**:
+   On the very first launch, the backend detects that the MongoDB database is empty and automatically triggers the seeding script. This populates the system with demo lecturers, students, timetables, and rules.
+
+### Container Details
+- **Frontend Container**: Uses a multi-stage build starting with Node.js to compile static assets and uses an Nginx alpine container to serve the web files and reverse-proxy the API/WS calls.
+- **Backend Container**: Built on Node.js 22 alpine, serving REST APIs and handling WebSockets.
+- **Database Container**: Powered by MongoDB 6.0 with volume persistence on the host machine.
+- **Cache Container**: Powered by Redis 7 alpine for handling real-time task queuing and slot calculation caching.
+
+---
+
 ## 📜 Development Documentation
 - [Product Requirement Document (PRD)](UniSync_PRD.md)
 - [Implementation Plan](UniSync_Implementation_Plan.md)

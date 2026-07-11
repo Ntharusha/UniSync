@@ -223,7 +223,7 @@ export default function StudentDashboard({ user }: { user: User }) {
     }
     
     const handleUpdate = (data: any) => {
-      if (selectedLecturer?._id === data.lecturerId && selectedDate === data.date) {
+      if (selectedLecturer?._id === data.lecturerId && (data.date === 'dynamic' || selectedDate === data.date)) {
         fetchSlots();
       }
       fetchMyAppointments();

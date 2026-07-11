@@ -5,10 +5,21 @@ services:
   mongodb:
     image: mongo:6.0
     container_name: unisync_db
+    restart: always
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - unisync_network
+
+  # Redis service for caching and background reminder queues
+  redis:
+    image: redis:7-alpine
+    container_name: unisync_redis
+    restart: always
+    ports:
+      - "6379:6379"
     networks:
       - unisync_network
 
@@ -17,16 +28,35 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: ${DOCKER_HUB_USERNAME}/unisync-backend:latest
     container_name: unisync_backend
+    restart: always
     ports:
       - "3001:3001"
     environment:
       - PORT=3001
       - MONGODB_URI=mongodb://mongodb:27017/unisync
+      - REDIS_URL=redis://redis:6379
       - JWT_SECRET=supersecretjwtkeyforunisync
       - NODE_ENV=production
     depends_on:
       - mongodb
+      - redis
+    networks:
+      - unisync_network
+
+  # Frontend Web application service (serves assets and acts as a reverse proxy)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ${DOCKER_HUB_USERNAME}/unisync-frontend:latest
+    container_name: unisync_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
     networks:
       - unisync_network
 

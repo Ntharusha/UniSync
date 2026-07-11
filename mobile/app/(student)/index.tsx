@@ -11,6 +11,7 @@ import SlotPicker from '../../components/appointment/SlotPicker';
 import PrioritySelector from '../../components/appointment/PrioritySelector';
 import Button from '../../components/ui/Button';
 import { useToast } from '../../hooks/useToast';
+import { useSocket } from '../../hooks/useSocket';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function BookSlot() {
@@ -48,6 +49,12 @@ export default function BookSlot() {
       return apiGet<Slot[]>(`/api/availability/${selectedLecturer._id}?date=${selectedDate}`);
     },
     enabled: !!selectedLecturer,
+  });
+
+  useSocket('slot:updated', (data) => {
+    if (selectedLecturer?._id === data.lecturerId && (data.date === 'dynamic' || selectedDate === data.date)) {
+      refetchSlots();
+    }
   });
 
   const departmentOptions = faculty ? DEPARTMENTS_BY_FACULTY[faculty as any] || [] : [];

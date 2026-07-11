@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+uploads/*
+!uploads/.gitkeep
+Dockerfile
+.dockerignore
+tests
+jest.config.js
+npm-debug.log

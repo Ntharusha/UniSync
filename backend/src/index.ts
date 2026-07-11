@@ -206,7 +206,18 @@ app.post('/api/upload', authenticateToken, upload.single('file'), (req: any, res
 const PORT = process.env.PORT || 3001;
 
 if (process.env.NODE_ENV !== 'test') {
-  connectMongo().catch(() => {
+  connectMongo().then(async () => {
+    try {
+      const userCount = await User.countDocuments();
+      if (userCount === 0) {
+        console.log('Database is empty. Triggering automatic seeding...');
+        process.env.SEED_DISCONNECT = 'false';
+        await import('./seed');
+      }
+    } catch (err) {
+      console.error('Failed to run automatic database seeding:', err);
+    }
+  }).catch(() => {
     /* errors logged in connectMongo */
   });
 }
@@ -508,6 +519,19 @@ app.post('/api/admin/users/bulk-import', authenticateToken, requireRole('admin')
     if (req.file && req.file.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
   }
 });
+
+const clearAvailabilityCache = async (lecturerId: string) => {
+  if (redis) {
+    try {
+      const keys = await redis.keys(`avail:${lecturerId}:*`);
+      if (keys && keys.length > 0) {
+        await redis.del(...keys);
+      }
+    } catch (err) {
+      console.error('Failed to clear redis cache:', err);
+    }
+  }
+};
 
 // Get rules for a lecturer
 app.get('/api/availability/rules/:lecturerId', authenticateToken, async (req: Request, res: Response) => {
@@ -924,6 +948,9 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
       }).save();
     }
 
+    await clearAvailabilityCache(lecturerId);
+    io.emit('slot:updated', { lecturerId, date: 'dynamic' });
+
     res.json({
       message: 'Timetable activated successfully',
       conflictsFound: conflicts.length,
@@ -962,6 +989,7 @@ app.post('/api/availability/rules', authenticateToken, async (req: Request, res:
     await rule.save();
 
     // Clear cache/Notify clients
+    await clearAvailabilityCache(lecturerId);
     io.emit('slot:updated', { lecturerId, date: date ? date.split('T')[0] : 'dynamic' });
 
     res.status(201).json(rule);
@@ -987,6 +1015,7 @@ app.delete('/api/availability/rules/:id', authenticateToken, async (req: Request
 
     const lecturerId = rule.lecturerId;
     await AvailabilityRule.findByIdAndDelete(req.params.id);
+    await clearAvailabilityCache(lecturerId.toString());
 
     io.emit('slot:updated', { lecturerId, date: 'dynamic' });
     res.sendStatus(200);
@@ -1095,6 +1124,7 @@ app.post('/api/appointments', authenticateToken, requireRole('student', 'admin')
       }
     }
 
+    await clearAvailabilityCache(lecturerId);
     io.emit('slot:updated', { lecturerId, date: requestedStart.split('T')[0] });
     io.emit('notification', {
       userId: lecturerId,
@@ -1227,6 +1257,7 @@ app.patch('/api/appointments/:id', authenticateToken, requireRole('lecturer', 'a
     });
     await appt.save();
 
+    await clearAvailabilityCache(appt.lecturerId.toString());
     io.emit('slot:updated', { lecturerId: appt.lecturerId, date: appt.requestedStart.toISOString().split('T')[0] });
     io.emit('notification', {
       userId: targetUserId,

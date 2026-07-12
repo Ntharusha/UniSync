@@ -918,7 +918,7 @@ app.post('/api/timetable/activate', authenticateToken, async (req: Request, res:
     for (const conflict of conflicts) {
       // Support multiple conflict shapes (tests vs runtime)
       const appointmentId = conflict._id ?? conflict.appointmentId;
-      const studentId = conflict.studentId ?? conflict.student?._id ?? conflict.student;
+      const studentId = (conflict.studentId as any)?._id ?? (conflict.student as any)?._id ?? conflict.studentId ?? conflict.student;
 
       await Appointment.findByIdAndUpdate(appointmentId, {
         status: 'cancelled',

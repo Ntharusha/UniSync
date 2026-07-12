@@ -83,6 +83,10 @@ describe('UniSync Integration Tests', () => {
         .post('/api/timetable/activate')
         .send({ lecturerId: lecturer._id, blocks });
 
+      if (res.status !== 200) {
+        console.error('Activate endpoint error body:', res.body);
+      }
+
       expect(res.status).toBe(200);
       expect(res.body.conflictsFound).toBe(1);
 
